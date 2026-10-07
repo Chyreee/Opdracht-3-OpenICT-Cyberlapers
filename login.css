@@ -1,0 +1,39 @@
+body {
+font-family: Arial;
+background-color: lightblue;
+text-align: center;
+}
+
+ .login {
+background-color: white;
+width: 300px;
+margin: 100px auto;
+padding: 30px;
+border-radius: 10px;
+}
+
+input {
+width: 90%;
+padding: 10px;
+margin: 10px;
+border-radius: 15px;
+
+}
+.submit {
+background-color: #1dd3b0;
+color: white;
+padding: 10px 30px;
+border: none;
+border-radius: 5px;
+}
+
+.submit:hover {
+background-color: #1a9e8c;
+transition: background-color 0.5s;
+}
+
+p{
+    font-size: 15px;
+    float: left;
+    margin: 10px;
+}
