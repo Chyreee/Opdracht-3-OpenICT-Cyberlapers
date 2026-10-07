@@ -4,11 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CodesharingApp</title>
-</head>
-<body>
-<h1>CodesharingApp</h1> 
-<button id="Ask Question">Button 1 </button>
 
-</button>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="app-shell">
+        <h1>CodesharingApp</h1>
+
+        <button id="askQuestion" type="button">
+            Ask Question
+        </button>
+    </main>
+
+
+    <dialog id="questionDialog" aria-labelledby="questionDialogTitle">
+
+        <form method="dialog" class="question-dialog">
+
+            <div class="dialog-header">
+
+                <div>
+                    <p class="eyebrow">Question</p>
+                    <h2 id="questionDialogTitle">
+                        Ask your question
+                    </h2>
+                </div>
+
+                <button
+                    class="close-button"
+                    type="button"
+                    aria-label="Close question dialog">
+                    &times;
+                </button>
+
+            </div>
+
+
+            <label for="questionDescription">
+                Description
+            </label>
+
+            <textarea
+                id="questionDescription"
+                name="description"
+                rows="5"
+                placeholder="Describe your question here..."
+                required></textarea>
+
+
+            <div class="dialog-actions">
+
+                <button
+                    class="secondary-button"
+                    type="button"
+                    data-close-dialog>
+                    Cancel
+                </button>
+
+                <button
+                    class="primary-button"
+                    type="submit">
+                    Send Question
+                </button>
+
+            </div>
+
+        </form>
+
+    </dialog>
+
+
+    <script>
+
+        const askQuestionButton =
+            document.getElementById('askQuestion');
+
+        const questionDialog =
+            document.getElementById('questionDialog');
+
+        const closeButtons =
+            questionDialog.querySelectorAll(
+                '[data-close-dialog], .close-button'
+            );
+
+
+        askQuestionButton.addEventListener('click', () => {
+
+            questionDialog.showModal();
+
+            document
+                .getElementById('questionDescription')
+                .focus();
+
+        });
+
+
+        closeButtons.forEach((button) => {
+
+            button.addEventListener('click', () => {
+                questionDialog.close();
+            });
+
+        });
+
+
+        questionDialog.addEventListener('click', (event) => {
+
+            if (event.target === questionDialog) {
+                questionDialog.close();
+            }
+
+        });
+
+    </script>
+
 </body>
 </html>

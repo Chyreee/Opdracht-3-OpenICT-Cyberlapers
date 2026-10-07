@@ -1,15 +1,162 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
+    min-height: 100vh;
+    margin: 0;
     font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    color: #172033;
+}
+
+.app-shell {
+    min-height: 100vh;
+    display: grid;
+    place-content: center;
+    gap: 1rem;
+    text-align: center;
 }
 
 h1 {
-    margin-bottom: 1rem;
+    margin: 0;
+    font-size: 2rem;
 }
 
-button[id="Ask Question"] {
+/* Ask Question button */
+
+#askQuestion {
     padding: 12px 24px;
     font-size: 18px;
     border: none;
     border-radius: 8px;
+    background: #2563eb;
+    color: #ffffff;
     cursor: pointer;
+}
+
+#askQuestion:hover {
+    background: #1d4ed8;
+}
+
+
+/* Question popup */
+
+.question-dialog {
+    width: min(90vw, 520px);
+    padding: 1.5rem;
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+}
+
+.question-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(3px);
+}
+
+
+/* Popup header */
+
+.dialog-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.dialog-header h2 {
+    margin: 0.2rem 0 0;
+}
+
+.eyebrow {
+    margin: 0;
+    color: #2563eb;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+
+/* Close button */
+
+.close-button {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: #eef2f7;
+    color: #334155;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.close-button:hover {
+    background: #e2e8f0;
+}
+
+
+/* Description field */
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+textarea {
+    width: 100%;
+    min-height: 130px;
+    resize: vertical;
+    padding: 0.85rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font: inherit;
+    color: #172033;
+    background: #ffffff;
+}
+
+textarea:focus {
+    outline: 3px solid rgba(37, 99, 235, 0.2);
+    border-color: #2563eb;
+}
+
+
+/* Popup buttons */
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.dialog-actions button {
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.secondary-button {
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+}
+
+.secondary-button:hover {
+    background: #f1f5f9;
+}
+
+.primary-button {
+    border: 1px solid #2563eb;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.primary-button:hover {
+    background: #1d4ed8;
 }
