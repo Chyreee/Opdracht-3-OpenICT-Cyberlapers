@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodesharingApp</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>CodesharingApp</h1>
+    <button id="Ask Question">Button 1 </button>
+#button1 { 
+    padding: 12px 24px;
+    font-size: 18px;
+    border-radius: 8px;
+    Border: none;
+    cursor: pointer;
+}
+    </body>
+</html>
