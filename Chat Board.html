@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Board</title>
+    <style>
+        body {
+            max-width: 640px;
+            margin: 48px auto;
+            padding: 0 20px;
+            color: #1f2937;
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+        }
+
+        textarea {
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 100px;
+            margin: 8px 0 12px;
+            padding: 12px;
+            font: inherit;
+            resize: vertical;
+        }
+
+        button {
+            margin: 0 8px 8px 0;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 4px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        #messages {
+            margin-top: 24px;
+        }
+
+        .message {
+            margin: 12px 0;
+            padding: 12px;
+            border-left: 4px solid #2563eb;
+            background: #f3f4f6;
+            overflow-wrap: anywhere;
+        }
+
+        .answer {
+            margin-left: 24px;
+            border-left-color: #16a34a;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Chat Board</h1>
+        <p>Write a question or answer, then choose the matching button.</p>
+
+        <label for="messageInput">Your message</label>
+        <textarea id="messageInput" placeholder="Type your question or answer here"></textarea>
+        <div>
+            <button type="button" onclick="AskQuestion()">Ask Question</button>
+            <button type="button" onclick="AwnserQuestion()">Answer Question</button>
+        </div>
+
+        <section id="messages" aria-live="polite" aria-label="Questions and answers"></section>
+    </main>
+
+    <script>
+        function addMessage(text, className, label) {
+            const message = document.createElement("p");
+            message.className = `message ${className}`;
+            message.textContent = `${label}: ${text}`;
+            document.getElementById("messages").appendChild(message);
+        }
+
+        function getMessage() {
+            const input = document.getElementById("messageInput");
+            const text = input.value.trim();
+
+            if (!text) {
+                input.focus();
+                return null;
+            }
+
+            input.value = "";
+            input.focus();
+            return text;
+        }
+
+        function AskQuestion() {
+            const question = getMessage();
+            if (question) {
+                addMessage(question, "question", "Question");
+            }
+        }
+
+        function AwnserQuestion() {
+            const answer = getMessage();
+            if (answer) {
+                addMessage(answer, "answer", "Answer");
+            }
+        }
+    </script>
+</body>
+</html>
