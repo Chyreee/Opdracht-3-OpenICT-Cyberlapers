@@ -15,3 +15,12 @@ CREATE TABLE questions (
     beroepsrol VARCHAR(20) NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE votes (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    question_id INTEGER NOT NULL REFERENCES questions(id),
+    vote_type VARCHAR(4) NOT NULL,
+    UNIQUE (user_vote, question_id),
+    CHECK (vote_type IN ('up', 'down'))
+
+);
