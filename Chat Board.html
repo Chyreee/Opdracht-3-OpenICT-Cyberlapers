@@ -1,10 +1,16 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Board</title>
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             max-width: 640px;
             margin: 48px auto;
@@ -12,23 +18,25 @@
             color: #1f2937;
             font-family: Arial, sans-serif;
             line-height: 1.5;
+            background: #ffffff;
         }
 
         textarea {
-            box-sizing: border-box;
             width: 100%;
             min-height: 100px;
             margin: 8px 0 12px;
             padding: 12px;
             font: inherit;
             resize: vertical;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
         }
 
         button {
             margin: 0 8px 8px 0;
             padding: 10px 16px;
             border: 0;
-            border-radius: 4px;
+            border-radius: 6px;
             background: #2563eb;
             color: white;
             cursor: pointer;
@@ -37,6 +45,29 @@
 
         button:hover {
             background: #1d4ed8;
+        }
+
+        button:focus-visible,
+        textarea:focus-visible {
+            outline: 2px solid #60a5fa;
+            outline-offset: 2px;
+        }
+
+        .settings {
+            margin-top: 20px;
+            padding: 14px;
+            background: #f3f4f6;
+            border-radius: 8px;
+        }
+
+        .settings label {
+            display: block;
+            margin: 8px 0;
+        }
+
+        #status {
+            color: #4b5563;
+            font-size: 14px;
         }
 
         #messages {
@@ -49,35 +80,267 @@
             border-left: 4px solid #2563eb;
             background: #f3f4f6;
             overflow-wrap: anywhere;
+            border-radius: 4px;
         }
 
         .answer {
             margin-left: 24px;
             border-left-color: #16a34a;
         }
+
+        /* Popup notification */
+        #notification {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            max-width: min(360px, calc(100vw - 40px));
+            padding: 16px 20px;
+            background: #111827;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px #0003;
+            opacity: 0;
+            transform: translateY(12px);
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 1000;
+        }
+
+        #notification.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #notification strong {
+            display: block;
+            margin-bottom: 4px;
+        }
     </style>
 </head>
+
 <body>
     <main>
         <h1>Chat Board</h1>
         <p>Write a question or answer, then choose the matching button.</p>
 
         <label for="messageInput">Your message</label>
-        <textarea id="messageInput" placeholder="Type your question or answer here"></textarea>
+        <textarea
+            id="messageInput"
+            placeholder="Type your question or answer here"
+        ></textarea>
+
         <div>
-            <button type="button" onclick="AskQuestion()">Ask Question</button>
-            <button type="button" onclick="AwnserQuestion()">Answer Question</button>
+            <button type="button" onclick="askQuestion()">
+                Ask Question
+            </button>
+
+            <button type="button" onclick="answerQuestion()">
+                Answer Question
+            </button>
         </div>
 
-        <section id="messages" aria-live="polite" aria-label="Questions and answers"></section>
+        <section class="settings" aria-label="Notification settings">
+            <h2>Notification settings</h2>
+
+            <label>
+                <input type="checkbox" id="soundEnabled" checked>
+                Enable notification sound
+            </label>
+
+            <label>
+                <input type="checkbox" id="browserEnabled">
+                Enable browser notifications
+            </label>
+
+            <button type="button" onclick="enableBrowserNotifications()">
+                Allow browser notifications
+            </button>
+
+            <button type="button" onclick="testNotification()">
+                Test notification sound
+            </button>
+
+            <p id="status" aria-live="polite">
+                Sound is enabled. Post a message to test it.
+            </p>
+        </section>
+
+        <section
+            id="messages"
+            aria-live="polite"
+            aria-label="Questions and answers"
+        ></section>
     </main>
 
+    <div
+        id="notification"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+    >
+        <strong id="notificationTitle"></strong>
+        <span id="notificationText"></span>
+    </div>
+
     <script>
+        // Notification audio
+        let audioContext = null;
+        let notificationTimer = null;
+
+        const soundEnabled = document.getElementById("soundEnabled");
+        const browserEnabled = document.getElementById("browserEnabled");
+        const status = document.getElementById("status");
+
+        // Browsers usually require a user interaction before audio can play.
+        async function initializeAudio() {
+            const AudioContextClass =
+                window.AudioContext || window.webkitAudioContext;
+
+            if (!AudioContextClass) {
+                status.textContent =
+                    "Audio notifications are not supported in this browser.";
+                return false;
+            }
+
+            if (!audioContext) {
+                audioContext = new AudioContextClass();
+            }
+
+            if (audioContext.state === "suspended") {
+                await audioContext.resume();
+            }
+
+            return audioContext.state === "running";
+        }
+
+        // Generate a short notification tone without an external audio file.
+        async function playNotificationSound() {
+            if (!soundEnabled.checked) return;
+
+            try {
+                const ready = await initializeAudio();
+                if (!ready) return;
+
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                oscillator.type = "sine";
+                oscillator.frequency.setValueAtTime(
+                    880, audioContext.currentTime
+                );
+
+                gain.gain.setValueAtTime(
+                    0.0001, audioContext.currentTime
+                );
+
+                gain.gain.exponentialRampToValueAtTime(
+                    0.18, audioContext.currentTime + 0.02
+                );
+
+                gain.gain.exponentialRampToValueAtTime(
+                    0.0001, audioContext.currentTime + 0.25
+                );
+
+                oscillator.connect(gain);
+                gain.connect(audioContext.destination);
+
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.26);
+            } catch (error) {
+                console.warn("Could not play notification sound:", error);
+            }
+        }
+
+        // Display an in-page popup.
+        function showToast(title, message) {
+            const notification = document.getElementById("notification");
+
+            document.getElementById("notificationTitle").textContent = title;
+            document.getElementById("notificationText").textContent = message;
+
+            notification.classList.add("visible");
+
+            clearTimeout(notificationTimer);
+
+            notificationTimer = setTimeout(() => {
+                notification.classList.remove("visible");
+            }, 3500);
+        }
+
+        // Optional operating-system/browser notification.
+        function showBrowserNotification(title, message) {
+            if (!browserEnabled.checked) return;
+
+            if (!("Notification" in window)) return;
+
+            if (Notification.permission === "granted") {
+                try {
+                    const notification = new Notification(title, {
+                        body: message,
+                        tag: "chat-board-message"
+                    });
+
+                    notification.onclick = () => {
+                        window.focus();
+                        notification.close();
+                    };
+                } catch (error) {
+                    console.warn(
+                        "Browser notification could not be displayed:",
+                        error
+                    );
+                }
+            }
+        }
+
+        async function enableBrowserNotifications() {
+            if (!("Notification" in window)) {
+                status.textContent =
+                    "Browser notifications are not supported.";
+                return;
+            }
+
+            try {
+                const permission = await Notification.requestPermission();
+
+                if (permission === "granted") {
+                    browserEnabled.checked = true;
+                    status.textContent =
+                        "Browser notifications enabled.";
+                    showToast("Notifications enabled", "You're all set!");
+                } else {
+                    browserEnabled.checked = false;
+                    status.textContent =
+                        "Notification permission was not granted.";
+                }
+            } catch (error) {
+                status.textContent =
+                    "Could not request browser notification permission.";
+            }
+        }
+
+        // One central function for every new message.
+        // A future server/WebSocket can call this function too.
+        function notifyNewMessage(type, message) {
+            const title = type === "Question"
+                ? "New question!"
+                : "New answer!";
+
+            showToast(title, message);
+            playNotificationSound();
+            showBrowserNotification(title, message);
+        }
+
         function addMessage(text, className, label) {
             const message = document.createElement("p");
+
             message.className = `message ${className}`;
             message.textContent = `${label}: ${text}`;
+
             document.getElementById("messages").appendChild(message);
+
+            // Trigger notifications for newly posted messages.
+            notifyNewMessage(label, text);
         }
 
         function getMessage() {
@@ -91,23 +354,64 @@
 
             input.value = "";
             input.focus();
+
             return text;
         }
 
-        function AskQuestion() {
+        function askQuestion() {
             const question = getMessage();
+
             if (question) {
                 addMessage(question, "question", "Question");
             }
         }
 
-        function AwnserQuestion() {
+        function answerQuestion() {
             const answer = getMessage();
+
             if (answer) {
                 addMessage(answer, "answer", "Answer");
             }
         }
+
+        async function testNotification() {
+            const ready = await initializeAudio();
+
+            if (ready) {
+                await playNotificationSound();
+                status.textContent = soundEnabled.checked
+                    ? "Test sound played."
+                    : "Audio is ready. Enable sound to hear it.";
+            }
+        }
+
+        // Update status when sound settings change.
+        soundEnabled.addEventListener("change", () => {
+            status.textContent = soundEnabled.checked
+                ? "Sound is enabled."
+                : "Sound is disabled.";
+        });
+
+        browserEnabled.addEventListener("change", () => {
+            if (
+                browserEnabled.checked &&
+                Notification.permission !== "granted"
+            ) {
+                browserEnabled.checked = false;
+                status.textContent =
+                    "Click Allow browser notifications to grant permission.";
+            }
+        });
+
+        // Allow Enter to post with Ctrl+Enter.
+        document.getElementById("messageInput")
+            .addEventListener("keydown", event => {
+                if (event.key === "Enter" && event.ctrlKey) {
+                    event.preventDefault();
+                    askQuestion();
+                }
+            });
     </script>
 </body>
 </html>
-
+```
