@@ -183,16 +183,22 @@
     </div>
 
     <script>
-        // Notification audio
+        // Decode notification WAV files with Web Audio for browser compatibility.
         let audioContext = null;
+        const notificationSounds = {
+            Question: "sounds/1.wav",
+            Answer: "sounds/2.wav"
+        };
+        const decodedSounds = {};
         let notificationTimer = null;
 
         const soundEnabled = document.getElementById("soundEnabled");
         const browserEnabled = document.getElementById("browserEnabled");
         const status = document.getElementById("status");
 
-        // Browsers usually require a user interaction before audio can play.
-        async function initializeAudio() {
+        async function playNotificationSound(type) {
+            if (!soundEnabled.checked) return false;
+
             const AudioContextClass =
                 window.AudioContext || window.webkitAudioContext;
 
@@ -202,52 +208,38 @@
                 return false;
             }
 
-            if (!audioContext) {
-                audioContext = new AudioContextClass();
-            }
-
-            if (audioContext.state === "suspended") {
-                await audioContext.resume();
-            }
-
-            return audioContext.state === "running";
-        }
-
-        // Generate a short notification tone without an external audio file.
-        async function playNotificationSound() {
-            if (!soundEnabled.checked) return;
-
             try {
-                const ready = await initializeAudio();
-                if (!ready) return;
+                if (!audioContext) {
+                    audioContext = new AudioContextClass();
+                }
 
-                const oscillator = audioContext.createOscillator();
-                const gain = audioContext.createGain();
+                if (audioContext.state === "suspended") {
+                    await audioContext.resume();
+                }
 
-                oscillator.type = "sine";
-                oscillator.frequency.setValueAtTime(
-                    880, audioContext.currentTime
-                );
+                if (!decodedSounds[type]) {
+                    const response = await fetch(notificationSounds[type]);
+                    if (!response.ok) {
+                        throw new Error(
+                            `Could not load ${notificationSounds[type]} (${response.status}).`
+                        );
+                    }
 
-                gain.gain.setValueAtTime(
-                    0.0001, audioContext.currentTime
-                );
+                    decodedSounds[type] = await audioContext.decodeAudioData(
+                        await response.arrayBuffer()
+                    );
+                }
 
-                gain.gain.exponentialRampToValueAtTime(
-                    0.18, audioContext.currentTime + 0.02
-                );
-
-                gain.gain.exponentialRampToValueAtTime(
-                    0.0001, audioContext.currentTime + 0.25
-                );
-
-                oscillator.connect(gain);
-                gain.connect(audioContext.destination);
-
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + 0.26);
+                const source = audioContext.createBufferSource();
+                source.buffer = decodedSounds[type];
+                source.connect(audioContext.destination);
+                source.start();
+                return true;
             } catch (error) {
                 console.warn("Could not play notification sound:", error);
+                status.textContent =
+                    `Could not play the ${type.toLowerCase()} notification sound: ${error.message}`;
+                return false;
             }
         }
 
@@ -327,7 +319,7 @@
                 : "New answer!";
 
             showToast(title, message);
-            playNotificationSound();
+            playNotificationSound(type);
             showBrowserNotification(title, message);
         }
 
@@ -375,13 +367,14 @@
         }
 
         async function testNotification() {
-            const ready = await initializeAudio();
+            if (!soundEnabled.checked) {
+                status.textContent = "Audio is disabled. Enable sound to test it.";
+                return;
+            }
 
-            if (ready) {
-                await playNotificationSound();
-                status.textContent = soundEnabled.checked
-                    ? "Test sound played."
-                    : "Audio is ready. Enable sound to hear it.";
+            const played = await playNotificationSound("Question");
+            if (played) {
+                status.textContent = "Test question sound played.";
             }
         }
 
