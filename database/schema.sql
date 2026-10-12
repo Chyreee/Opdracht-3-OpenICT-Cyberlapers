@@ -18,6 +18,7 @@ CREATE TABLE questions (
 
 CREATE TABLE votes (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_vote INTEGER NOT NULL REFERENCES users(id),
     question_id INTEGER NOT NULL REFERENCES questions(id),
     vote_type VARCHAR(4) NOT NULL,
     UNIQUE (user_vote, question_id),
