@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,14 +10,42 @@
             box-sizing: border-box;
         }
 
+        :root {
+            color-scheme: dark;
+            --pink: #ff3366;
+            --coral: #ff6b6b;
+            --teal: #1dd3b0;
+            --panel: #212529;
+            --background: #0c0f16;
+            --text: #f5f7fa;
+            --muted: #b8c0cc;
+        }
+
         body {
-            max-width: 640px;
-            margin: 48px auto;
-            padding: 0 20px;
-            color: #1f2937;
+            display: grid;
+            grid-template-columns: 33.333333% 66.666667%;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text);
             font-family: Arial, sans-serif;
             line-height: 1.5;
-            background: #ffffff;
+            background: var(--background);
+        }
+
+        main {
+            min-width: 0;
+            min-height: 100vh;
+            padding: 32px clamp(16px, 3vw, 40px);
+            border-right: 2px solid var(--teal);
+            background: var(--panel);
+        }
+
+        h1 {
+            color: var(--pink);
+        }
+
+        h2 {
+            color: var(--teal);
         }
 
         textarea {
@@ -27,9 +54,11 @@
             margin: 8px 0 12px;
             padding: 12px;
             font: inherit;
+            color: var(--text);
             resize: vertical;
-            border: 1px solid #d1d5db;
+            border: 1px solid var(--teal);
             border-radius: 6px;
+            background: var(--background);
         }
 
         button {
@@ -37,27 +66,29 @@
             padding: 10px 16px;
             border: 0;
             border-radius: 6px;
-            background: #2563eb;
-            color: white;
+            background: var(--pink);
+            color: var(--background);
             cursor: pointer;
             font: inherit;
+            font-weight: 700;
         }
 
         button:hover {
-            background: #1d4ed8;
+            background: var(--coral);
         }
 
         button:focus-visible,
         textarea:focus-visible {
-            outline: 2px solid #60a5fa;
+            outline: 2px solid var(--teal);
             outline-offset: 2px;
         }
 
         .settings {
             margin-top: 20px;
             padding: 14px;
-            background: #f3f4f6;
+            border: 1px solid #454b52;
             border-radius: 8px;
+            background: var(--background);
         }
 
         .settings label {
@@ -65,8 +96,12 @@
             margin: 8px 0;
         }
 
+        .settings input {
+            accent-color: var(--teal);
+        }
+
         #status {
-            color: #4b5563;
+            color: var(--muted);
             font-size: 14px;
         }
 
@@ -77,15 +112,29 @@
         .message {
             margin: 12px 0;
             padding: 12px;
-            border-left: 4px solid #2563eb;
-            background: #f3f4f6;
+            border-left: 4px solid var(--pink);
+            background: var(--background);
             overflow-wrap: anywhere;
             border-radius: 4px;
         }
 
         .answer {
             margin-left: 24px;
-            border-left-color: #16a34a;
+            border-left-color: var(--teal);
+        }
+
+        @media (max-width: 700px) {
+            body {
+                grid-template-columns: 33.333333% 66.666667%;
+            }
+
+            main {
+                padding: 24px 14px;
+            }
+
+            .answer {
+                margin-left: 10px;
+            }
         }
 
         /* Popup notification */
@@ -95,10 +144,10 @@
             bottom: 20px;
             max-width: min(360px, calc(100vw - 40px));
             padding: 16px 20px;
-            background: #111827;
+            background: var(--pink);
             color: white;
             border-radius: 10px;
-            box-shadow: 0 8px 24px #0003;
+            box-shadow: 0 8px 24px #0008;
             opacity: 0;
             transform: translateY(12px);
             pointer-events: none;
@@ -147,21 +196,13 @@
                 Enable notification sound
             </label>
 
-            <label>
-                <input type="checkbox" id="browserEnabled">
-                Enable browser notifications
-            </label>
-
-            <button type="button" onclick="enableBrowserNotifications()">
-                Allow browser notifications
-            </button>
-
             <button type="button" onclick="testNotification()">
                 Test notification sound
             </button>
 
             <p id="status" aria-live="polite">
-                Sound is enabled. Post a message to test it.
+                Sound is enabled. Browser notification permission will be
+                requested when you post your first message.
             </p>
         </section>
 
@@ -191,9 +232,9 @@
         };
         const decodedSounds = {};
         let notificationTimer = null;
+        let notificationPermissionRequest = null;
 
         const soundEnabled = document.getElementById("soundEnabled");
-        const browserEnabled = document.getElementById("browserEnabled");
         const status = document.getElementById("status");
 
         async function playNotificationSound(type) {
@@ -259,55 +300,66 @@
             }, 3500);
         }
 
-        // Optional operating-system/browser notification.
-        function showBrowserNotification(title, message) {
-            if (!browserEnabled.checked) return;
+        function displayBrowserNotification(title, message) {
+            try {
+                const notification = new Notification(title, {
+                    body: message,
+                    tag: "chat-board-message"
+                });
 
-            if (!("Notification" in window)) return;
-
-            if (Notification.permission === "granted") {
-                try {
-                    const notification = new Notification(title, {
-                        body: message,
-                        tag: "chat-board-message"
-                    });
-
-                    notification.onclick = () => {
-                        window.focus();
-                        notification.close();
-                    };
-                } catch (error) {
-                    console.warn(
-                        "Browser notification could not be displayed:",
-                        error
-                    );
-                }
+                notification.onclick = () => {
+                    window.focus();
+                    notification.close();
+                };
+            } catch (error) {
+                console.warn(
+                    "Browser notification could not be displayed:",
+                    error
+                );
             }
         }
 
-        async function enableBrowserNotifications() {
+        // Ask automatically when a message is posted, inside a user action.
+        function showBrowserNotification(title, message) {
             if (!("Notification" in window)) {
                 status.textContent =
-                    "Browser notifications are not supported.";
+                    "Browser notifications are not supported in this browser.";
+                return;
+            }
+            if (Notification.permission === "granted") {
+                displayBrowserNotification(title, message);
+                return;
+            }
+            if (Notification.permission === "denied") {
+                status.textContent =
+                    "Browser notifications are blocked in browser settings.";
                 return;
             }
 
-            try {
-                const permission = await Notification.requestPermission();
-
-                if (permission === "granted") {
-                    browserEnabled.checked = true;
-                    status.textContent =
-                        "Browser notifications enabled.";
-                    showToast("Notifications enabled", "You're all set!");
-                } else {
-                    browserEnabled.checked = false;
-                    status.textContent =
-                        "Notification permission was not granted.";
-                }
-            } catch (error) {
-                status.textContent =
-                    "Could not request browser notification permission.";
+            if (!notificationPermissionRequest) {
+                notificationPermissionRequest =
+                    Notification.requestPermission()
+                        .then(permission => {
+                            if (permission === "granted") {
+                                status.textContent =
+                                    "Browser notifications enabled.";
+                                displayBrowserNotification(title, message);
+                            } else {
+                                status.textContent =
+                                    "Browser notification permission was not granted.";
+                            }
+                        })
+                        .catch(error => {
+                            console.warn(
+                                "Could not request browser notification permission:",
+                                error
+                            );
+                            status.textContent =
+                                "Could not request browser notification permission.";
+                        })
+                        .finally(() => {
+                            notificationPermissionRequest = null;
+                        });
             }
         }
 
@@ -385,17 +437,6 @@
                 : "Sound is disabled.";
         });
 
-        browserEnabled.addEventListener("change", () => {
-            if (
-                browserEnabled.checked &&
-                Notification.permission !== "granted"
-            ) {
-                browserEnabled.checked = false;
-                status.textContent =
-                    "Click Allow browser notifications to grant permission.";
-            }
-        });
-
         // Allow Enter to post with Ctrl+Enter.
         document.getElementById("messageInput")
             .addEventListener("keydown", event => {
@@ -407,4 +448,3 @@
     </script>
 </body>
 </html>
-```
