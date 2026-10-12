@@ -22,5 +22,4 @@ CREATE TABLE votes (
     vote_type VARCHAR(4) NOT NULL,
     UNIQUE (user_vote, question_id),
     CHECK (vote_type IN ('up', 'down'))
-
 );
