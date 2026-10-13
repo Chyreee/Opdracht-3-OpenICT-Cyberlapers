@@ -1,39 +1,69 @@
-body {
-font-family: Arial;
-background-color: lightblue;
-text-align: center;
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
 }
 
- .login {
-background-color: white;
-width: 300px;
-margin: 100px auto;
-padding: 30px;
-border-radius: 10px;
+body {
+
+    background:#764ba2;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login {
+    background-color: white;
+    width: 350px;
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+p {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 10px;
 }
 
 input {
-width: 90%;
-padding: 10px;
-margin: 10px;
-border-radius: 15px;
-
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
+
+
+
 .submit {
-background-color: #1dd3b0;
-color: white;
-padding: 10px 30px;
-border: none;
-border-radius: 5px;
+    width: 100%;
+    background: #764ba2;
+    color: white;
+    padding: 14px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .submit:hover {
-background-color: #1a9e8c;
-transition: background-color 0.5s;
+    transition-duration: 0.3s;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
-p{
-    font-size: 15px;
-    float: left;
-    margin: 10px;
-}
