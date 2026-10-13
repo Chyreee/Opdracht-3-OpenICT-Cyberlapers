@@ -1,0 +1,267 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f7f7f7;
+}
+
+body {
+  padding: 10px 16px;
+  background-image:
+    linear-gradient(#e5e5e5 1px, transparent 1px),
+    linear-gradient(90deg, #e5e5e5 1px, transparent 1px);
+  background-size: 46px 46px;
+}
+
+.browser {
+  width: 100%;
+  max-width: 1200px;
+  height: calc(100vh - 20px);
+  min-height: 610px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 2px solid #555b60;
+  border-radius: 6px;
+  background: #dce0e5;
+  display: flex;
+  flex-direction: column;
+}
+
+.browser-bar {
+  height: 44px;
+  flex: 0 0 44px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 5px;
+  background: #c4c8cd;
+  border-bottom: 2px solid #555b60;
+}
+
+.topbar {
+  height: 44px;
+  flex: 0 0 44px;
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) minmax(230px, 1.2fr) 90px 120px;
+  align-items: center;
+  gap: 22px;
+  padding: 5px 28px 5px 40px;
+  background: #dce0e5;
+  border-top: 2px solid #555b60;
+  border-inline: 2px solid #555b60;
+  border-bottom: 2px solid #555b60;
+}
+
+.brand {
+  height: 20px;
+}
+
+.search {
+  height: 32px;
+  background: #fff;
+  border: 2px solid #555b60;
+  border-radius: 6px;
+}
+
+.user {
+  justify-self: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid #9da8b3;
+  border-radius: 50%;
+  background: #cbdff2;
+}
+
+.login button {
+  height: 33px;
+  padding: 0 20px; /* remove the vertical padding */
+  display: flex;
+  align-items: center;     /* center vertically */
+  justify-content: center; /* center horizontally */
+  background: #fff;
+  border: 2px solid #555b60;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+.layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 27% 45% 28%;
+}
+
+.leaderboard {
+  min-height: 0;
+  padding: 0 6px 10px;
+  background: gray;
+  border-right: 2px solid #555b60;
+  border-radius: 5px 5px 0 0;
+  overflow: hidden;
+}
+
+.leaderboard-title {
+  height: 88px;
+}
+
+.leader-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.leader {
+  min-height: 46px;
+  margin: 0 15px;
+  padding: 10px 6px;
+  background: #fff;
+  border: 2px solid #555b60;
+  border-radius: 6px;
+}
+
+.leader.current {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.questions {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background: #f0f1f3;
+}
+
+.ask-question button {
+  color: #fff;
+  width: 100%;
+  height: 45px;
+  padding: 0 140px; /* keep horizontal padding, remove vertical padding */
+  flex: 0 0 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #202326;
+  border: 2px solid #555b60;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.question-card {
+  min-height: 98px;
+  flex: 1 0 98px;
+  padding: 20px 9px 12px;
+  background: #f0f1f3;
+  border: 2px solid #555b60;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.question-heading {
+  width: 56%;
+  height: 13px;
+  margin: 0 auto;
+}
+
+.question-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 8px;
+}
+
+.question-meta span {
+  display: block;
+  width: 22px;
+  height: 12px;
+}
+
+.question-meta span:last-child {
+  width: 35%;
+}
+
+.empty-card {
+  min-height: 50px;
+  flex-basis: 50px;
+  padding: 0;
+}
+
+.empty-card .question-heading,
+.empty-card .question-meta {
+  display: none;
+}
+
+.right-sidebar {
+  min-height: 0;
+  background: gray;
+  border: 2px solid #555b60;
+  border-radius: 6px 6px 0 0;
+}
+
+@media (max-width: 760px) {
+  body {
+    padding: 6px;
+  }
+
+  .browser {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    grid-template-columns: 1fr 2fr;
+    gap: 8px;
+    height: auto;
+    flex-basis: auto;
+    padding: 8px;
+  }
+
+  .user {
+    display: none;
+  }
+
+  .login {
+    grid-column: 2;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .leaderboard {
+    border-right: 0;
+    border-bottom: 2px solid #555b60;
+  }
+
+  .leaderboard-title {
+    height: 48px;
+  }
+
+  .leader-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .leader,
+  .leader.current {
+    margin: 0;
+  }
+
+  .questions {
+    overflow: visible;
+  }
+
+  .right-sidebar {
+    min-height: 120px;
+  }
+}
