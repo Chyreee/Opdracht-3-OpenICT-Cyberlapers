@@ -32,13 +32,48 @@
         </div>
       </aside>
 
+
 <section class="questions">
   <div class="ask-question">
-    <button type="button">Ask a question</button>
+    <button type="button" id="askQuestionButton">Ask a question</button>
   </div>
 
+  <form id="questionForm" hidden>
+    <label for="title">Title</label>
+    <input type="text" id="title" maxlength="50" required>
 
+    <label for="questionText">Your question</label>
+    <textarea id="questionText" required></textarea>
+
+    <label for="code">Code snippet</label>
+    <textarea id="code" required></textarea>
+
+    <label for="studyYear">Study year</label>
+    <select id="studyYear" required>
+      <option value="">Select a year</option>
+      <option value="1">Year 1</option>
+      <option value="2">Year 2</option>
+      <option value="3">Year 3</option>
+      <option value="4">Year 4</option>
+    </select>
+
+ 
+<label for="beroepsrol">Beroepsrol</label>
+<input
+    type="text"
+    id="beroepsrol"
+    placeholder="Bijv. Software developer"
+    required
+>
+
+
+    <button type="submit">Submit question</button>
+    <button type="button" id="cancelQuestionButton">Cancel</button>
+
+    <p id="formMessage"></p>
+  </form>
 </section>
+
 
 <aside class="right-sidebar"></aside>
 </main>
