@@ -71,3 +71,7 @@ i {
 margin-left: -30px; 
 cursor: pointer;
 }
+
+#tekst {
+    text-align: center;
+    margin-top: 20px;}
