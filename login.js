@@ -45,13 +45,12 @@ if (!response.ok) {
     return;
 }
 
-// Save the user's details after a successful login.
-if (!isRegistering) {
-    localStorage.setItem("userId", data.id);
-    localStorage.setItem("username", data.username);
-}
+// Save the user's details after successful login or registration.
+localStorage.setItem("userId", data.id);
+localStorage.setItem("username", data.username);
 
-alert(data.message || "Request successful");
+// Go to the homepage.
+window.location.href = "homescreen.html";
 
 })
 .catch(error => {
