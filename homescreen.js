@@ -10,7 +10,7 @@ async function loadQuestions() {
         const questions = await response.json();
         const questionsSection = document.querySelector(".questions");
 
-        // Remove old question cards before loading them again.
+        
         questionsSection.querySelectorAll(".question-card").forEach(card => {
             card.remove();
         });
@@ -49,30 +49,29 @@ async function loadQuestions() {
     }
 }
 
-// Get the form elements.
 const askQuestionButton = document.getElementById("askQuestionButton");
 const questionForm = document.getElementById("questionForm");
 const cancelQuestionButton = document.getElementById("cancelQuestionButton");
 const formMessage = document.getElementById("formMessage");
 
-// Open the form.
+
 askQuestionButton.addEventListener("click", () => {
     questionForm.hidden = false;
     formMessage.textContent = "";
 });
 
-// Close the form and clear its fields.
+
 cancelQuestionButton.addEventListener("click", () => {
     questionForm.hidden = true;
     questionForm.reset();
     formMessage.textContent = "";
 });
 
-// Submit a new question.
+
 questionForm.addEventListener("submit", async event => {
     event.preventDefault();
 
-    // Get the logged-in user's ID.
+   
     const userId = localStorage.getItem("userId");
 
     if (!userId) {
@@ -109,7 +108,6 @@ questionForm.addEventListener("submit", async event => {
         questionForm.reset();
         questionForm.hidden = true;
 
-        // Reload the cards to display the new question.
         await loadQuestions();
 
     } catch (error) {
@@ -118,5 +116,5 @@ questionForm.addEventListener("submit", async event => {
     }
 });
 
-// Load existing questions when the homepage opens.
+
 loadQuestions();
