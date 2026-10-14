@@ -8,6 +8,14 @@ class UserData(BaseModel):
     username: str
     password: str
 
+class QuestionData(BaseModel):
+    title: str
+    question_text: str
+    code: str
+    author_id: int
+    study_year: int
+    beroepsrol: str
+
 app = FastAPI()
 
 password_hash = PasswordHash.recommended()
@@ -152,5 +160,65 @@ def get_questions():
             }
             questions.append(question)
         return questions
+    finally:
+        conn.close()
+
+
+@app.post("/api/questions")
+def create_question(data: QuestionData):
+    conn = get_db_connection()
+
+    try:
+        cur = conn.cursor()
+
+        # Check whether the author exists
+        cur.execute(
+            "SELECT id FROM users WHERE id = %s",
+            (data.author_id,)
+        )
+
+        if cur.fetchone() is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Author not found"
+            )
+
+        # Insert the question into the database
+        cur.execute(
+            """
+            INSERT INTO questions
+                (title, question_text, code, author_id, study_year, beroepsrol)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            RETURNING id, title, question_text, code,
+                      author_id, study_year, beroepsrol, created_at
+            """,
+            (
+                data.title,
+                data.question_text,
+                data.code,
+                data.author_id,
+                data.study_year,
+                data.beroepsrol
+            )
+        )
+
+        row = cur.fetchone()
+        conn.commit()
+
+        return {
+            "id": row[0],
+            "title": row[1],
+            "question_text": row[2],
+            "code": row[3],
+            "author_id": row[4],
+            "study_year": row[5],
+            "beroepsrol": row[6],
+            "created_at": row[7]
+        }
+
+    except Exception:
+        conn.rollback()
+        raise
+
     finally:
         conn.close()
