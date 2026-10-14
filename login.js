@@ -40,12 +40,19 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
     .then(async response => {
     const data = await response.json();
 
-    if (!response.ok) {
-        alert(data.detail || "Something went wrong");
-        return;
-    }
+if (!response.ok) {
+    alert(data.detail || "Something went wrong");
+    return;
+}
 
-    alert(data.message || "Request successful");
+// Save the user's details after a successful login.
+if (!isRegistering) {
+    localStorage.setItem("userId", data.id);
+    localStorage.setItem("username", data.username);
+}
+
+alert(data.message || "Request successful");
+
 })
 .catch(error => {
     console.error(error);
