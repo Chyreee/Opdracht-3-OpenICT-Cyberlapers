@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: codeshare-postgres
+    environment:
+      POSTGRES_USER: codeshare
+      POSTGRES_PASSWORD: codeshare_dev
+      POSTGRES_DB: codeshare
+    ports:
+      - "5432:5432"
