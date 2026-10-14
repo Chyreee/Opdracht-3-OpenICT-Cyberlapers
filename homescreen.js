@@ -3,7 +3,7 @@ async function loadQuestions() {
 
     const questions = await response.json();
 
-    console.log(questions);
+   console.log(questions);
 }
 
 loadQuestions();
