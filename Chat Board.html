@@ -119,6 +119,33 @@
             margin-top: 24px;
         }
 
+        .question-button {
+            display: block;
+            width: 100%;
+            margin: 12px 0;
+            text-align: left;
+            overflow-wrap: anywhere;
+        }
+
+        #chatPopup {
+            width: min(600px, calc(100vw - 32px));
+            max-height: min(80vh, 700px);
+            padding: 24px;
+            color: var(--text);
+            border: 1px solid var(--teal);
+            border-radius: 8px;
+            background: var(--panel);
+        }
+
+        #chatPopup::backdrop {
+            background: #0009;
+        }
+
+        #chatMessages {
+            max-height: 40vh;
+            overflow-y: auto;
+        }
+
         .message {
             margin: 12px 0;
             padding: 12px;
@@ -176,15 +203,11 @@
 <body>
     <main>
         <h1>Chat Board</h1>
-        <p>Choose a button to ask a question or submit an answer.</p>
+        <p>Ask a question or open a question to reply in its chat.</p>
 
         <div>
-            <button type="button" onclick="openTextField('Question')">
+            <button type="button" onclick="openTextField()">
                 Ask Question
-            </button>
-
-            <button type="button" onclick="openTextField('Answer')">
-                Answer Question
             </button>
         </div>
 
@@ -222,8 +245,21 @@
         <section
             id="messages"
             aria-live="polite"
-            aria-label="Questions and answers"
+            aria-label="Chats and answers"
         ></section>
+
+        <dialog id="chatPopup" aria-labelledby="chatTitle">
+            <h2 id="chatTitle"></h2>
+            <section id="chatMessages" aria-live="polite"></section>
+            <label for="chatInput">Your message</label>
+            <textarea
+                id="chatInput"
+                placeholder="Write a message..."
+                rows="3"
+            ></textarea>
+            <button type="button" onclick="closeChat()">Close chat</button>
+            <button type="button" onclick="submitChatMessage()">Send</button>
+        </dialog>
     </main>
 
     <div
@@ -249,13 +285,13 @@
 
         const soundEnabled = document.getElementById("soundEnabled");
         const status = document.getElementById("status");
-        let messageType = "Question";
+        const chats = [];
+        let activeChat = null;
 
-        function openTextField(type) {
-            messageType = type;
-            document.getElementById("messageTitle").textContent = `Enter your ${type}`;
-            document.getElementById("messageLabel").textContent = `Your ${type.toLowerCase()}`;
-            document.getElementById("messageInput").placeholder = `Type in your ${type.toLowerCase()}!`;
+        function openTextField() {
+            document.getElementById("messageTitle").textContent = "Enter your Question";
+            document.getElementById("messageLabel").textContent = "Your question";
+            document.getElementById("messageInput").placeholder = "Type in your question!";
             document.getElementById("messagePopup").showModal();
             document.getElementById("messageInput").focus();
         }
@@ -271,7 +307,7 @@
             closeTextField();
 
             if (text) {
-                addMessage(text, messageType.toLowerCase(), messageType);
+                addQuestion(text);
             }
 
             input.value = "";
@@ -415,16 +451,66 @@
             showBrowserNotification(title, message);
         }
 
-        function addMessage(text, className, label) {
-            const message = document.createElement("p");
+        function addQuestion(text) {
+            const chat = {
+                question: text,
+                replies: []
+            };
+            const chatIndex = chats.push(chat) - 1;
+            const button = document.createElement("button");
 
-            message.className = `message ${className}`;
-            message.textContent = `${label}: ${text}`;
+            button.type = "button";
+            button.className = "question-button";
+            button.textContent = text;
+            button.setAttribute("aria-label", `Open chat: ${text}`);
+            button.addEventListener("click", () => openChat(chatIndex));
 
-            document.getElementById("messages").appendChild(message);
+            document.getElementById("messages").appendChild(button);
+            notifyNewMessage("Question", text);
+        }
 
-            // Trigger notifications for newly posted messages.
-            notifyNewMessage(label, text);
+        function openChat(chatIndex) {
+            activeChat = chats[chatIndex];
+            document.getElementById("chatTitle").textContent =
+                activeChat.question;
+            renderChatMessages();
+            document.getElementById("chatPopup").showModal();
+            document.getElementById("chatInput").focus();
+        }
+
+        function renderChatMessages() {
+            const chatMessages = document.getElementById("chatMessages");
+            chatMessages.replaceChildren();
+
+            const question = document.createElement("p");
+            question.className = "message question";
+            question.textContent = `Question: ${activeChat.question}`;
+            chatMessages.appendChild(question);
+
+            activeChat.replies.forEach(reply => {
+                const message = document.createElement("p");
+                message.className = "message answer";
+                message.textContent = `Answer: ${reply}`;
+                chatMessages.appendChild(message);
+            });
+        }
+
+        function closeChat() {
+            document.getElementById("chatPopup").close();
+            activeChat = null;
+        }
+
+        function submitChatMessage() {
+            const input = document.getElementById("chatInput");
+            const text = input.value.trim();
+
+            if (!text || !activeChat) return;
+
+            activeChat.replies.push(text);
+            renderChatMessages();
+            input.value = "";
+            input.focus();
+            notifyNewMessage("Answer", text);
         }
 
         async function testNotification() {
