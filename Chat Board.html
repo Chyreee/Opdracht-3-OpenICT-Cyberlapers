@@ -12,13 +12,15 @@
 
         :root {
             color-scheme: dark;
-            --pink: #ff3366;
-            --coral: #ff6b6b;
-            --teal: #1dd3b0;
-            --panel: #212529;
-            --background: #0c0f16;
-            --text: #f5f7fa;
-            --muted: #b8c0cc;
+            --teal: #1CCBAD;
+            --purple: #784BA5;
+            --white: #FFFFFF;
+            --dark: #292929;
+            --gray: #777777;
+            --background: var(--dark);
+            --panel: var(--dark);
+            --text: var(--white);
+            --muted: var(--teal);
         }
 
         body {
@@ -38,7 +40,7 @@
         }
 
         h1 {
-            color: var(--pink);
+            color: var(--purple);
         }
 
         h2 {
@@ -53,7 +55,7 @@
             font: inherit;
             color: var(--text);
             resize: vertical;
-            border: 1px solid var(--teal);
+            border: 1px solid var(--gray);
             border-radius: 6px;
             background: var(--background);
         }
@@ -74,15 +76,16 @@
             padding: 10px 16px;
             border: 0;
             border-radius: 6px;
-            background: var(--pink);
-            color: var(--background);
+            background: var(--purple);
+            color: var(--white);
             cursor: pointer;
             font: inherit;
             font-weight: 700;
         }
 
         button:hover {
-            background: var(--coral);
+            background: var(--teal);
+            color: var(--dark);
         }
 
         button:focus-visible,
@@ -113,11 +116,11 @@
         #chatPopup::backdrop {
             background: #0009;
         }
-
+        
         .settings {
             margin-top: 20px;
             padding: 14px;
-            border: 1px solid #454b52;
+            border: 1px solid var(--gray);
             border-radius: 8px;
             background: var(--background);
         }
@@ -151,7 +154,7 @@
         .message {
             margin: 12px 0;
             padding: 12px;
-            border-left: 4px solid var(--pink);
+            border-left: 4px solid var(--purple);
             background: var(--background);
             overflow-wrap: anywhere;
             border-radius: 4px;
@@ -179,8 +182,8 @@
             bottom: 20px;
             max-width: min(360px, calc(100vw - 40px));
             padding: 16px 20px;
-            background: var(--pink);
-            color: white;
+            background: var(--purple);
+            color: var(--white);
             border-radius: 10px;
             box-shadow: 0 8px 24px #0008;
             opacity: 0;
