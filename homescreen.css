@@ -79,7 +79,8 @@ body {
 }
 
 .user {
-  justify-self: center;
+ position: fixed;
+  right: 120px;
   width: 34px;
   height: 34px;
   border: 2px solid #9da8b3;
