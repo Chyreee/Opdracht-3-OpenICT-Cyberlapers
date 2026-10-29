@@ -1,7 +1,7 @@
 
 async function loadQuestions() {
     try {
-        const response = await fetch("http://127.0.0.1:8000/api/questions");
+        const response = await fetch("/api/questions");
 
         if (!response.ok) {
             throw new Error("Could not load questions.");
@@ -89,7 +89,7 @@ questionForm.addEventListener("submit", async event => {
     };
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/api/questions", {
+        const response = await fetch("/api/questions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

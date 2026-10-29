@@ -1,3 +1,4 @@
+
 * {
   box-sizing: border-box;
 }
@@ -44,10 +45,11 @@ body {
 }
 
 .topbar {
+  position: relative;
   height: 44px;
   flex: 0 0 44px;
   display: grid;
-  grid-template-columns: minmax(110px, 1fr) minmax(230px, 1.2fr) 90px 120px;
+  grid-template-columns: 1fr 300px 90px 120px;
   align-items: center;
   gap: 22px;
   padding: 5px 28px 5px 40px;
@@ -62,33 +64,40 @@ body {
 }
 
 .search {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
   height: 32px;
   background: #fff;
   border: 2px solid #555b60;
   border-radius: 6px;
 }
 
+/* Circular profile button */
 .user {
   justify-self: center;
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 2px solid #9da8b3;
   border-radius: 50%;
   background: #cbdff2;
-}
-
-.login button {
-  height: 33px;
-  padding: 0 20px; /* remove the vertical padding */
-  display: flex;
-  align-items: center;     /* center vertically */
-  justify-content: center; /* center horizontally */
-  background: #fff;
-  border: 2px solid #555b60;
-  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 
+.user:hover {
+  background: #a9c9e8;
+}
+
+.user:focus-visible {
+  outline: 2px solid #202326;
+  outline-offset: 3px;
+}
 
 .layout {
   flex: 1;
@@ -143,7 +152,7 @@ body {
   color: #fff;
   width: 100%;
   height: 45px;
-  padding: 0 140px; /* keep horizontal padding, remove vertical padding */
+  padding: 0 140px;
   flex: 0 0 45px;
   display: flex;
   align-items: center;
@@ -153,7 +162,6 @@ body {
   border-radius: 5px;
   cursor: pointer;
 }
-
 
 .question-card {
   min-height: 98px;
@@ -242,12 +250,11 @@ body {
     padding: 8px;
   }
 
-  .user {
-    display: none;
-  }
-
-  .login {
+  /* Keep the profile button visible on mobile */
+  .topbar .user {
+    display: flex;
     grid-column: 2;
+    justify-self: end;
   }
 
   .layout {
@@ -281,3 +288,4 @@ body {
     min-height: 120px;
   }
 }
+

@@ -25,8 +25,8 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
 
    fetch(
     isRegistering
-        ? "http://127.0.0.1:8000/api/register"
-        : "http://127.0.0.1:8000/api/login",
+        ? "/api/register"
+        : "/api/login",
      {
         method: "post",
         headers:  {

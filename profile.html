@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Code Sharing</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        .profile-avatar {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+        .profile-container h1,
+        .profile-container p {
+            text-align: center;
+        }
+        .profile-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        .profile-actions button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .back-button {
+            background: #e5e7eb;
+            color: #111827;
+        }
+        .logout-button {
+            background: #dc2626;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand"></div>
+        <div class="search"></div>
+        <button class="user" type="button"
+                aria-label="My profile"
+                title="My profile"
+                onclick="window.location.href='profile.html'"></button>
+    </header>
+
+    <main class="profile-container">
+        <div class="profile-avatar" aria-hidden="true">&#128100;</div>
+        <h1>My Profile</h1>
+        <p>Username: <strong id="profileUsername">Loading...</strong></p>
+        <p>User ID: <span id="profileUserId">Loading...</span></p>
+
+        <div class="profile-actions">
+            <button class="back-button" id="backButton" type="button">
+                Back to home
+            </button>
+            <button class="logout-button" id="logoutButton" type="button">
+                Log out
+            </button>
+        </div>
+    </main>
+
+    <script src="profile.js"></script>
+</body>
+</html>
