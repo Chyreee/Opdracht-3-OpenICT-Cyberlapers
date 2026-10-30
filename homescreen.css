@@ -1,24 +1,28 @@
-
-html,
-
-body {
+* {
   box-sizing: border-box;
+}
+
+html, body {
   margin: 0;
+  padding: 0;
+  width: 100%;
   min-height: 100%;
   font-family: Arial, Helvetica, sans-serif;
-  background-color: #1CCBAD ;
+  background-color: #1CCBAD;
 }
 
 body {
-  padding: 10px 16px; 
-  background-size: 46px 46px;
+  padding: 10px 16px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .browser {
   width: 100%;
   max-width: 1200px;
   height: calc(100vh - 20px);
-  min-height: 610px;
+  min-height: 100px;
   margin: 0 auto;
   overflow: hidden;
   border: 2px solid #555b60;
@@ -53,16 +57,18 @@ body {
 }
 
 .brand button {
+  color: #fff;
   width: fit-content;
   height: fit-content;
   padding: 5px 10px;
-  background: #fff;
+  background: #784BA5;
   border: 2px solid #555b60;
   border-radius: 6px;
   cursor: pointer;
 }
 
 .search {
+  color: #555b60;
   width: 25%;
   height: 32px;
   box-sizing: border-box;
@@ -80,26 +86,13 @@ body {
 
 .user {
  position: fixed;
-  right: 120px;
+  right: 40px;
   width: 34px;
   height: 34px;
   border: 2px solid #9da8b3;
   border-radius: 50%;
-  background: #cbdff2;
+  background: #784BA5;
 }
-
-.login button {
-  height: 33px;
-  padding: 0 20px; /* remove the vertical padding */
-  display: flex;
-  align-items: center;     /* center vertically */
-  justify-content: center; /* center horizontally */
-  background: #fff;
-  border: 2px solid #555b60;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
 
 .layout {
   flex: 1;
@@ -131,7 +124,7 @@ body {
   min-height: 30px;
   margin: 0 10px;
   padding: 8px 6px;
-  background: #784BA5;
+  background: #777777;
   border-radius: 6px;
 }
 
@@ -142,11 +135,32 @@ body {
 
 .questions {
   min-height: 0;
-  overflow: hidden;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
   display: flex;
   flex-direction: column;
   gap: 7px;
+
   background: #f0f1f3;
+  padding: 10px;
+  border: 2px solid #555b60;
+  border-radius: 6px;
+}
+
+/* Scrollbar vormgeving */
+.questions::-webkit-scrollbar {
+  width: 8px;
+}
+
+.questions::-webkit-scrollbar-thumb {
+  background: #784BA5;
+  border-radius: 10px;
+}
+
+.questions::-webkit-scrollbar-track {
+  background: #dce0e5;
 }
 
 .ask-question button {
@@ -158,8 +172,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #292929;
-  border: 2px solid #292929;
+  background: #784BA5;
+  border: 2px solid #784BA5;
   border-radius: 2px;
   cursor: pointer;
 }
