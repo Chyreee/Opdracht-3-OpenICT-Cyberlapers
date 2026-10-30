@@ -1,99 +1,187 @@
 
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Code Sharing App</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HumanGI - Code Sharing App</title>
+
+    <link rel="stylesheet" href="homescreen.css">
 </head>
+
 <body>
 
-  <header class="topbar">
-    <div class="brand"></div>
+    <div class="browser">
 
-    <div class="search"></div>
+        <!-- TOP NAVIGATION -->
+        <header class="topbar">
 
-    <button
-      class="user"
-      type="button"
-      aria-label="Log in"
-      title="Log in"
-      onclick="window.location.href='login.html'">
-    </button>
-  </header>
+            <div class="brand">
+                <button
+                    type="button"
+                    onclick="window.location.href='homescreen.html'">
+                    HumanGI
+                </button>
+            </div>
 
-  <main class="layout">
+            <input
+                type="text"
+                class="search"
+                id="searchInput"
+                placeholder="Zoek hier een vraag..."
+                aria-label="Zoek een vraag"
+            >
 
-    <aside class="leaderboard">
-      <div class="leaderboard-title"></div>
+            <button
+                class="user"
+                type="button"
+                aria-label="Open profiel"
+                title="Open profiel"
+                onclick="window.location.href='profile.html'">
+            </button>
 
-      <div class="leader-list">
-        <div class="leader current"></div>
-        <div class="leader"></div>
-        <div class="leader"></div>
-        <div class="leader"></div>
-        <div class="leader"></div>
-        <div class="leader"></div>
-        <div class="leader"></div>
-        <div class="leader"></div>
-      </div>
-    </aside>
+        </header>
 
-    <section class="questions">
-      <div class="ask-question">
-        <button type="button" id="askQuestionButton">
-          Ask a question
-        </button>
-      </div>
 
-      <form id="questionForm" hidden>
-        <label for="title">Title</label>
-        <input
-          type="text"
-          id="title"
-          maxlength="50"
-          required
-        >
+        <!-- MAIN PAGE LAYOUT -->
+        <main class="layout">
 
-        <label for="questionText">Your question</label>
-        <textarea id="questionText" required></textarea>
 
-        <label for="code">Code snippet</label>
-        <textarea id="code" required></textarea>
+            <!-- LEFT SIDEBAR: LEADERBOARD -->
+            <aside class="leaderboard">
 
-        <label for="studyYear">Study year</label>
-        <select id="studyYear" required>
-          <option value="">Select a year</option>
-          <option value="1">Year 1</option>
-          <option value="2">Year 2</option>
-          <option value="3">Year 3</option>
-          <option value="4">Year 4</option>
-        </select>
+                <div class="leaderboard-title"></div>
 
-        <label for="beroepsrol">Beroepsrol</label>
-        <input
-          type="text"
-          id="beroepsrol"
-          placeholder="Bijv. Software developer"
-          required
-        >
+                <div class="leader-list">
 
-        <button type="submit">Submit question</button>
-        <button type="button" id="cancelQuestionButton">
-          Cancel
-        </button>
+                    <div class="leader current"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
 
-        <p id="formMessage"></p>
-      </form>
-    </section>
+                </div>
 
-    <aside class="right-sidebar"></aside>
+            </aside>
 
-  </main>
 
-  <script src="homescreen.js"></script>
+            <!-- CENTER: QUESTIONS -->
+            <section class="questions">
+
+                <!-- ASK QUESTION BUTTON -->
+                <div class="ask-question">
+
+                    <button
+                        type="button"
+                        id="askQuestionButton">
+                        Ask a question
+                    </button>
+
+                </div>
+
+
+                <!-- QUESTION FORM -->
+                <form id="questionForm" hidden>
+
+                    <label for="title">
+                        Title
+                    </label>
+
+                    <input
+                        type="text"
+                        id="title"
+                        maxlength="50"
+                        required
+                    >
+
+
+                    <label for="questionText">
+                        Your question
+                    </label>
+
+                    <textarea
+                        id="questionText"
+                        required
+                    ></textarea>
+
+
+                    <label for="code">
+                        Code snippet
+                    </label>
+
+                    <textarea
+                        id="code"
+                        required
+                    ></textarea>
+
+
+                    <label for="studyYear">
+                        Study year
+                    </label>
+
+                    <select id="studyYear" required>
+
+                        <option value="">
+                            Select a year
+                        </option>
+
+                        <option value="1">Year 1</option>
+                        <option value="2">Year 2</option>
+                        <option value="3">Year 3</option>
+                        <option value="4">Year 4</option>
+
+                    </select>
+
+
+                    <label for="beroepsrol">
+                        Beroepsrol
+                    </label>
+
+                    <input
+                        type="text"
+                        id="beroepsrol"
+                        placeholder="Bijv. Software developer"
+                        required
+                    >
+
+
+                    <!-- FORM BUTTONS -->
+                    <button type="submit">
+                        Submit question
+                    </button>
+
+                    <button
+                        type="button"
+                        id="cancelQuestionButton">
+                        Cancel
+                    </button>
+
+
+                    <p id="formMessage"></p>
+
+                </form>
+
+            </section>
+
+
+            <!-- RIGHT SIDEBAR -->
+            <aside class="right-sidebar"></aside>
+
+
+        </main>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+    <script src="homescreen.js"></script>
 
 </body>
 </html>
-
