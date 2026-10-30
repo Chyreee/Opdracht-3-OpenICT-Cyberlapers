@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111719">
+    <title>Heidelberglaan 15 | Verdiepingen</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            color-scheme: dark;
+            --background: #111719;
+            --panel: #1a2224;
+            --panel-raised: #222c2e;
+            --border: #344143;
+            --text: #f2f6f5;
+            --muted: #9caaa8;
+            --mint: #1ccbad;
+            --purple: #784ba5;
+        }
+
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            background:
+                radial-gradient(ellipse at 68% -18%, #784ba52b, transparent 44%),
+                var(--background);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+        }
+
+        button {
+            color: inherit;
+            font: inherit;
+        }
+
+        button:focus-visible {
+            outline: 3px solid var(--mint);
+            outline-offset: 3px;
+        }
+
+        .page-shell {
+            width: min(1440px, calc(100% - 56px));
+            margin: 0 auto;
+            padding: 24px 0 40px;
+        }
+
+        .topbar {
+            display: flex;
+            min-height: 50px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border: 1px solid #1ccbad5e;
+            border-radius: 11px;
+            background: #1ccbad18;
+            color: var(--mint);
+            font-size: 13px;
+            letter-spacing: -0.05em;
+        }
+
+        .source-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .source-label::before {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--mint);
+            content: "";
+        }
+
+        .intro {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            margin: 34px 0 25px;
+        }
+
+        .eyebrow {
+            margin: 0 0 8px;
+            color: var(--mint);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(30px, 4vw, 43px);
+            letter-spacing: -0.045em;
+            line-height: 1.08;
+        }
+
+        .intro-copy {
+            max-width: 580px;
+            margin: 11px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .building-code {
+            flex: 0 0 auto;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            align-items: start;
+            gap: 20px;
+        }
+
+        .floor-panel,
+        .slide-panel {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: #1a2224e8;
+            box-shadow: 0 18px 50px #00000020;
+        }
+
+        .floor-panel {
+            min-width: 0;
+            padding: 12px;
+        }
+
+        .floor-panel-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 2px 6px 10px;
+        }
+
+        .floor-panel-heading h2 {
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .floor-panel-heading span {
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .floor-list {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 2px 2px 6px;
+            scrollbar-width: thin;
+        }
+
+        .floor-choice {
+            display: inline-flex;
+            min-height: 42px;
+            flex: 0 0 auto;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px 5px 6px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            background: transparent;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 140ms ease, border-color 140ms ease;
+        }
+
+        .floor-choice:hover {
+            background: #ffffff09;
+        }
+
+        .floor-choice.is-selected {
+            border-color: #1ccbad55;
+            background: #1ccbad13;
+        }
+
+        .floor-number {
+            display: grid;
+            width: 34px;
+            height: 34px;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--panel-raised);
+            color: #c6d0ce;
+            font-size: 11px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .is-selected .floor-number {
+            background: var(--mint);
+            color: #09231f;
+        }
+
+        .floor-name {
+            color: var(--text);
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .floor-room-count {
+            color: var(--muted);
+            font-size: 10px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .overview-choice {
+            border-color: var(--border);
+        }
+
+        .overview-choice .floor-number {
+            color: #d3b6f2;
+        }
+
+        .overview-choice.is-selected .floor-number {
+            background: var(--purple);
+            color: #fff;
+        }
+
+        .slide-panel {
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .slide-heading {
+            display: flex;
+            min-height: 73px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 14px 19px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .slide-heading h2 {
+            margin: 0;
+            font-size: 16px;
+            letter-spacing: -0.015em;
+        }
+
+        .slide-heading p {
+            margin: 3px 0 0;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .room-filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .room-filter-bar[hidden],
+        #dialog-category-row[hidden] {
+            display: none;
+        }
+
+        .room-filter-label {
+            flex: 0 0 auto;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .room-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .room-filter {
+            display: inline-flex;
+            min-height: 34px;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 12px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: var(--panel-raised);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            transition: background-color 140ms ease, border-color 140ms ease;
+        }
+
+        .room-filter:hover {
+            border-color: #1ccbad80;
+        }
+
+        .room-filter.is-selected {
+            border-color: #1ccbad70;
+            background: #1ccbad18;
+            color: var(--mint);
+        }
+
+        .room-filter-count {
+            color: var(--muted);
+            font-size: 10px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .room-filter:disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+        }
+
+        .slide-badge {
+            flex: 0 0 auto;
+            padding: 6px 9px;
+            border: 1px solid #1ccbad45;
+            border-radius: 7px;
+            background: #1ccbad12;
+            color: var(--mint);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .map-stage {
+            position: relative;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            background-color: #f7f8f6;
+            background-image:
+                linear-gradient(#1b2b2b08 1px, transparent 1px),
+                linear-gradient(90deg, #1b2b2b08 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .map-stage.is-overview {
+            min-height: 360px;
+        }
+
+        .map-image {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .map-stage.is-overview .map-image {
+            width: auto;
+            max-width: 100%;
+            max-height: min(74vh, 930px);
+            object-fit: contain;
+        }
+
+        .room-targets {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .room-target {
+            position: absolute;
+            display: block;
+            width: max(28px, var(--target-width));
+            height: max(26px, var(--target-height));
+            min-width: 28px;
+            min-height: 26px;
+            padding: 0;
+            transform: translate(-50%, -50%);
+            border: 1px solid transparent;
+            border-radius: 9px;
+            background: transparent;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: background-color 120ms ease, border-color 120ms ease;
+        }
+
+        .room-target:hover,
+        .room-target:focus-visible {
+            border-color: #079b83;
+            background: #1ccbad38;
+            outline-offset: 1px;
+        }
+
+        .study-space-target {
+            display: grid;
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            min-height: 30px;
+            place-items: center;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+        }
+
+        .study-space-target::before {
+            width: 10px;
+            height: 10px;
+            border: 1px solid #ffffff;
+            border-radius: 50%;
+            background: #ed1c24;
+            box-shadow: 0 1px 5px #0008;
+            content: "";
+            transition: transform 120ms ease, background-color 120ms ease;
+        }
+
+        .study-space-target:hover,
+        .study-space-target:focus-visible {
+            border-color: transparent;
+            background: transparent;
+        }
+
+        .study-space-target:hover::before,
+        .study-space-target:focus-visible::before {
+            transform: scale(1.2);
+            background: #c8141b;
+        }
+
+        .slide-controls {
+            display: flex;
+            min-height: 62px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .slide-button {
+            display: inline-flex;
+            min-height: 36px;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 10px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: var(--panel-raised);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .slide-button:hover:not(:disabled) {
+            border-color: #1ccbad80;
+            background: #263638;
+        }
+
+        .slide-button:disabled {
+            cursor: default;
+            opacity: 0.45;
+        }
+
+        .slide-position {
+            color: var(--muted);
+            font-size: 11px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .slide-position strong {
+            color: var(--text);
+        }
+
+        .room-dialog {
+            width: min(440px, calc(100% - 32px));
+            padding: 0;
+            border: 1px solid #405052;
+            border-radius: 16px;
+            background: var(--panel);
+            color: var(--text);
+            box-shadow: 0 24px 80px #0009;
+        }
+
+        .room-dialog::backdrop {
+            background: #071011b8;
+            backdrop-filter: blur(4px);
+        }
+
+        .dialog-content {
+            padding: 23px;
+        }
+
+        .dialog-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .dialog-header h2 {
+            margin: 0;
+            font-size: 25px;
+            letter-spacing: -0.035em;
+        }
+
+        .close-button {
+            display: grid;
+            width: 34px;
+            height: 34px;
+            flex: 0 0 auto;
+            place-items: center;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            background: var(--panel-raised);
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 19px;
+        }
+
+        .close-button:hover {
+            color: var(--text);
+        }
+
+        .room-details {
+            display: grid;
+            gap: 16px;
+            margin: 24px 0 18px;
+        }
+
+        .room-details div {
+            display: grid;
+            gap: 4px;
+        }
+
+        .room-details dt {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .room-details dd {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .room-name-blank {
+            width: 100%;
+            height: 25px;
+            border-bottom: 1px solid #536162;
+        }
+
+        .dialog-note {
+            margin: 0;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            clip-path: inset(50%);
+        }
+
+        @media (max-width: 1200px) {
+            .floor-room-count {
+                display: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .page-shell {
+                width: min(100% - 32px, 760px);
+            }
+
+            .workspace {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        @media (max-width: 560px) {
+            .page-shell {
+                width: calc(100% - 24px);
+                padding-top: 12px;
+            }
+
+            .topbar {
+                min-height: 45px;
+            }
+
+            .intro {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 14px;
+                margin: 24px 0 18px;
+            }
+
+            .intro-copy {
+                font-size: 12px;
+            }
+
+            .building-code {
+                padding: 7px 10px;
+            }
+
+            .floor-panel {
+                padding: 9px;
+            }
+
+            .floor-choice {
+                min-height: 38px;
+                gap: 6px;
+                padding: 4px 9px 4px 4px;
+            }
+
+            .floor-number {
+                width: 28px;
+                height: 28px;
+                font-size: 10px;
+            }
+
+            .floor-name {
+                font-size: 10px;
+            }
+
+            .slide-heading {
+                min-height: 65px;
+                gap: 8px;
+                padding: 11px 12px;
+            }
+
+            .slide-heading h2 {
+                font-size: 14px;
+            }
+
+            .room-filter-bar {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 7px;
+                padding: 9px 12px;
+            }
+
+            .room-filters {
+                flex-wrap: nowrap;
+                max-width: 100%;
+                overflow-x: auto;
+                padding-bottom: 3px;
+            }
+
+            .room-filter {
+                flex: 0 0 auto;
+                font-size: 10px;
+            }
+
+            .slide-badge {
+                padding: 5px 6px;
+                font-size: 9px;
+            }
+
+            .map-stage {
+                min-height: 0;
+            }
+
+            .map-stage.is-overview {
+                min-height: 230px;
+            }
+
+            .slide-controls {
+                min-height: 56px;
+                padding: 8px;
+            }
+
+            .slide-button {
+                min-height: 34px;
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+
+            .source-label {
+                font-size: 10px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="topbar">
+            <a class="brand" href="plattegrond.html" aria-label="Heidelberglaan 15, verdiepingen">
+                <span class="brand-mark" aria-hidden="true">HL15</span>
+                <span>Heidelberglaan 15</span>
+            </a>
+            <span class="source-label">Plattegronden HU</span>
+        </header>
+
+        <main>
+            <section class="intro" aria-labelledby="page-title">
+                <div>
+                    <p class="eyebrow">Gebouwverkenner</p>
+                    <h1 id="page-title">Verdiepingen</h1>
+                    <p class="intro-copy">Bekijk de gebouwlagen in het overzicht of kies een verdieping. Selecteer een kamernummer op de plattegrond voor de details.</p>
+                </div>
+                <span class="building-code">UTRECHT / HL15</span>
+            </section>
+
+            <div class="workspace">
+                <nav class="floor-panel" aria-label="Kies een verdieping">
+                    <div class="floor-panel-heading">
+                        <h2>Verdiepingen</h2>
+                        <span>Overzicht en 0 - 7</span>
+                    </div>
+                    <div class="floor-list" id="floor-list">
+                        <button class="floor-choice overview-choice is-selected" type="button" data-slide="0" aria-current="true">
+                            <span class="floor-number" aria-hidden="true">ALL</span>
+                            <span class="floor-name">Gebouw-overzicht</span>
+                        </button>
+                    </div>
+                </nav>
+
+                <section class="slide-panel" aria-label="Plattegrond slide">
+                    <header class="slide-heading">
+                        <div>
+                            <h2 id="slide-title">Gebouw-overzicht</h2>
+                            <p id="slide-description">Alle verdiepingen in een overzicht</p>
+                        </div>
+                        <span class="slide-badge" id="slide-badge">8 verdiepingen</span>
+                    </header>
+
+                    <div class="room-filter-bar" id="room-filter-bar" hidden>
+                        <span class="room-filter-label">Toon kamers:</span>
+                        <div class="room-filters" role="group" aria-label="Filter kamers op type">
+                            <button class="room-filter is-selected" type="button" data-room-filter="all" aria-pressed="true">
+                                Alle kamers <span class="room-filter-count" id="all-room-count"></span>
+                            </button>
+                            <button class="room-filter" type="button" data-room-filter="work-study" aria-pressed="false">
+                                Algemene werk- en studieomgeving <span class="room-filter-count" id="work-study-count"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="map-stage is-overview" id="map-stage">
+                        <img class="map-image" id="map-image" src="assets/building-overview.png" alt="Exploded overview of the floors at Heidelberglaan 15">
+                        <div class="room-targets" id="room-targets" aria-label="Kamers op deze verdieping"></div>
+                    </div>
+
+                    <footer class="slide-controls">
+                        <button class="slide-button" id="previous-slide" type="button" aria-label="Vorige verdieping">
+                            <span aria-hidden="true">&larr;</span> Vorige
+                        </button>
+                        <span class="slide-position" aria-live="polite"><strong id="slide-current">1</strong> / <span id="slide-total">9</span></span>
+                        <button class="slide-button" id="next-slide" type="button" aria-label="Volgende verdieping">
+                            Volgende <span aria-hidden="true">&rarr;</span>
+                        </button>
+                    </footer>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <dialog class="room-dialog" id="room-dialog" aria-labelledby="dialog-title">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <div>
+                    <p class="eyebrow">Ruimtegegevens</p>
+                    <h2 id="dialog-title"></h2>
+                </div>
+                <button class="close-button" id="close-dialog" type="button" aria-label="Venster sluiten">&times;</button>
+            </div>
+            <dl class="room-details">
+                <div>
+                    <dt>Kamernummer</dt>
+                    <dd id="dialog-room-number"></dd>
+                </div>
+                <div id="dialog-category-row" hidden>
+                    <dt>Type ruimte</dt>
+                    <dd id="dialog-category">Algemene werk- en studieomgeving</dd>
+                </div>
+                <div>
+                    <dt>Naam van de ruimte</dt>
+                    <dd class="room-name-blank"><span class="visually-hidden">Leeg</span></dd>
+                </div>
+            </dl>
+            <p class="dialog-note">De naam van de ruimte is leeg gelaten.</p>
+        </div>
+    </dialog>
+
+    <script src="floor-data.js"></script>
+    <script>
+        const floors = window.FLOOR_DATA.floors.slice();
+        const workStudyRoomNumbers = new Set([
+            "HL15-1.007", "HL15-1.009", "HL15-1.011", "HL15-1.016", "HL15-1.018",
+            "HL15-1.028", "HL15-1.036", "HL15-1.059", "HL15-1.076", "HL15-1.082",
+            "HL15-1.084", "HL15-1.093", "HL15-1.094", "HL15-1.095", "HL15-1.097",
+            "HL15-1.098", "HL15-1.099", "HL15-1.101", "HL15-1.102",
+            "HL15-2.007", "HL15-2.009", "HL15-2.016", "HL15-2.024", "HL15-2.026",
+            "HL15-2.033", "HL15-2.045", "HL15-2.047", "HL15-2.090", "HL15-2.092",
+            "HL15-2.138",
+            "HL15-3.047", "HL15-3.064", "HL15-3.067", "HL15-3.069",
+            "HL15-4.026", "HL15-4.028", "HL15-4.030", "HL15-4.037", "HL15-4.043",
+            "HL15-4.092", "HL15-4.118",
+            "HL15-5.022", "HL15-5.033", "HL15-5.064", "HL15-5.066", "HL15-5.069",
+            "HL15-5.071", "HL15-5.087", "HL15-5.090", "HL15-5.092",
+            "HL15-6.012", "HL15-6.025", "HL15-6.031", "HL15-6.032", "HL15-6.034",
+            "HL15-6.061",
+            "HL15-7.019", "HL15-7.024", "HL15-7.026", "HL15-7.027", "HL15-7.035",
+            "HL15-7.047"
+        ]);
+        const slides = [
+            { kind: "overview" },
+            ...floors.map((floor) => ({ kind: "floor", floor }))
+        ];
+        const floorList = document.getElementById("floor-list");
+        const mapStage = document.getElementById("map-stage");
+        const mapImage = document.getElementById("map-image");
+        const roomTargets = document.getElementById("room-targets");
+        const roomDialog = document.getElementById("room-dialog");
+        const previousButton = document.getElementById("previous-slide");
+        const nextButton = document.getElementById("next-slide");
+        const filterBar = document.getElementById("room-filter-bar");
+        const roomFilterButtons = document.querySelectorAll(".room-filter");
+        let currentSlide = 0;
+        let currentRoomFilter = "all";
+
+        floors.forEach((floor, index) => {
+            const button = document.createElement("button");
+            button.className = "floor-choice";
+            button.type = "button";
+            button.dataset.slide = String(index + 1);
+            button.setAttribute("aria-label", `${floor.label}, ${floor.rooms.length} kamers`);
+            button.innerHTML = `
+                <span class="floor-number" aria-hidden="true">${String(floor.level).padStart(2, "0")}</span>
+                <span class="floor-name">${floor.label}</span>
+                <span class="floor-room-count">${floor.rooms.length}</span>
+            `;
+            floorList.append(button);
+        });
+
+        function addRoomTargets(floor, rooms) {
+            roomTargets.replaceChildren();
+            rooms.forEach((room) => {
+                const isWorkStudyRoom = workStudyRoomNumbers.has(room.number);
+                const button = document.createElement("button");
+                button.className = "room-target";
+                button.type = "button";
+                button.title = room.number;
+                button.setAttribute(
+                    "aria-label",
+                    `Details van kamer ${room.number}${isWorkStudyRoom ? ", algemene werk- en studieomgeving" : ""}`
+                );
+                button.style.left = `${room.x}%`;
+                button.style.top = `${room.y}%`;
+                button.style.setProperty("--target-width", `${room.width}%`);
+                button.style.setProperty("--target-height", `${room.height}%`);
+                button.addEventListener("click", (event) => {
+                    const bounds = mapStage.getBoundingClientRect();
+                    const selectedRoom = event.detail === 0 ? room : rooms.reduce((nearest, candidate) => {
+                        const clickX = event.clientX - bounds.left;
+                        const clickY = event.clientY - bounds.top;
+                        const nearestX = nearest.x / 100 * bounds.width - clickX;
+                        const nearestY = nearest.y / 100 * bounds.height - clickY;
+                        const candidateX = candidate.x / 100 * bounds.width - clickX;
+                        const candidateY = candidate.y / 100 * bounds.height - clickY;
+                        return candidateX ** 2 + candidateY ** 2 < nearestX ** 2 + nearestY ** 2 ? candidate : nearest;
+                    }, rooms[0]);
+                    openRoomDialog(
+                        selectedRoom.number,
+                        workStudyRoomNumbers.has(selectedRoom.number)
+                            ? "Algemene werk- en studieomgeving"
+                            : ""
+                    );
+                });
+                roomTargets.append(button);
+            });
+        }
+
+        function addStudySpaceTargets(spots) {
+            roomTargets.replaceChildren();
+            spots.forEach((spot, index) => {
+                const button = document.createElement("button");
+                button.className = "room-target study-space-target";
+                button.type = "button";
+                button.title = "Algemene studieruimte";
+                button.setAttribute(
+                    "aria-label",
+                    `Details van algemene studieruimte, punt ${index + 1}`
+                );
+                button.style.left = `${spot.x}%`;
+                button.style.top = `${spot.y}%`;
+                button.addEventListener("click", () => {
+                    openRoomDialog("", "Algemene studieruimte");
+                });
+                roomTargets.append(button);
+            });
+        }
+
+        function openRoomDialog(roomNumber, category) {
+            const title = category || roomNumber;
+            document.getElementById("dialog-title").textContent = title;
+            document.getElementById("dialog-room-number").textContent = roomNumber;
+            document.getElementById("dialog-category").textContent = category;
+            document.getElementById("dialog-category-row").hidden = !category;
+            roomDialog.showModal();
+        }
+
+        function showRoomFilter(floor) {
+            const workStudyRooms = floor.rooms.filter((room) => workStudyRoomNumbers.has(room.number));
+            const filterIsAvailable = workStudyRooms.length > 0;
+
+            if (!filterIsAvailable) {
+                currentRoomFilter = "all";
+            }
+
+            roomFilterButtons.forEach((button) => {
+                const selected = button.dataset.roomFilter === currentRoomFilter;
+                button.classList.toggle("is-selected", selected);
+                button.setAttribute("aria-pressed", String(selected));
+                button.disabled = button.dataset.roomFilter === "work-study" && !filterIsAvailable;
+            });
+
+            document.getElementById("all-room-count").textContent = String(floor.rooms.length);
+            document.getElementById("work-study-count").textContent = String(workStudyRooms.length);
+            document.getElementById("slide-badge").textContent = currentRoomFilter === "work-study"
+                ? `${workStudyRooms.length} werk- en studieruimtes`
+                : `${floor.rooms.length} kamers`;
+
+            const visibleRooms = currentRoomFilter === "work-study" ? workStudyRooms : floor.rooms;
+            addRoomTargets(floor, visibleRooms);
+        }
+
+        function showSlide(index) {
+            currentSlide = (index + slides.length) % slides.length;
+            const slide = slides[currentSlide];
+            const overview = slide.kind === "overview";
+            const choices = document.querySelectorAll(".floor-choice");
+
+            choices.forEach((choice) => {
+                const selected = Number(choice.dataset.slide) === currentSlide;
+                choice.classList.toggle("is-selected", selected);
+                if (selected) {
+                    choice.setAttribute("aria-current", "true");
+                } else {
+                    choice.removeAttribute("aria-current");
+                }
+            });
+
+            mapStage.classList.toggle("is-overview", overview);
+            roomTargets.replaceChildren();
+            roomTargets.hidden = overview;
+            const hasStudySpots = !overview && Boolean(slide.floor.studySpots);
+            filterBar.hidden = overview || hasStudySpots;
+            currentRoomFilter = "all";
+            if (overview) {
+                mapImage.src = window.FLOOR_DATA.overview;
+                mapImage.alt = "Exploded overview showing the stacked floors of Heidelberglaan 15";
+                document.getElementById("slide-title").textContent = "Gebouw-overzicht";
+                document.getElementById("slide-description").textContent = "Alle verdiepingen in een overzicht";
+                document.getElementById("slide-badge").textContent = `${floors.length} verdiepingen`;
+            } else {
+                const floor = slide.floor;
+                mapImage.src = floor.image;
+                mapImage.alt = `Plattegrond van de ${floor.label} van Heidelberglaan 15`;
+                document.getElementById("slide-title").textContent = floor.label;
+                if (hasStudySpots) {
+                    document.getElementById("slide-description").textContent =
+                        "Selecteer een rode knop voor de gegevens van een algemene studieruimte";
+                    document.getElementById("slide-badge").textContent =
+                        `${floor.studySpots.length} algemene studieruimtes`;
+                    addStudySpaceTargets(floor.studySpots);
+                } else {
+                    document.getElementById("slide-description").textContent =
+                        "Selecteer een kamernummer voor de ruimtegegevens";
+                    showRoomFilter(floor);
+                }
+            }
+
+            document.getElementById("slide-current").textContent = String(currentSlide + 1);
+            previousButton.disabled = currentSlide === 0;
+            nextButton.disabled = currentSlide === slides.length - 1;
+        }
+
+        floorList.addEventListener("click", (event) => {
+            const button = event.target.closest("button[data-slide]");
+            if (button) {
+                showSlide(Number(button.dataset.slide));
+            }
+        });
+
+        roomFilterButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                const slide = slides[currentSlide];
+                if (slide.kind !== "floor") {
+                    return;
+                }
+                currentRoomFilter = button.dataset.roomFilter;
+                showRoomFilter(slide.floor);
+            });
+        });
+
+        previousButton.addEventListener("click", () => showSlide(currentSlide - 1));
+        nextButton.addEventListener("click", () => showSlide(currentSlide + 1));
+        document.getElementById("close-dialog").addEventListener("click", () => roomDialog.close());
+        roomDialog.addEventListener("click", (event) => {
+            if (event.target === roomDialog) {
+                roomDialog.close();
+            }
+        });
+        document.addEventListener("keydown", (event) => {
+            if (roomDialog.open) {
+                if (event.key === "Escape") {
+                    roomDialog.close();
+                }
+                return;
+            }
+            if (event.target instanceof HTMLElement && event.target.matches("button")) {
+                return;
+            }
+            if (event.key === "ArrowRight") {
+                showSlide(currentSlide + 1);
+            } else if (event.key === "ArrowLeft") {
+                showSlide(currentSlide - 1);
+            }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
