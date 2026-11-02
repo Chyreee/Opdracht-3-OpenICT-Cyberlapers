@@ -44,6 +44,8 @@ async function loadQuestions() {
 
             questionsSection.appendChild(card);
         });
+
+        filterQuestions();
     } catch (error) {
         console.error("Error loading questions:", error);
     }
@@ -53,13 +55,22 @@ const askQuestionButton = document.getElementById("askQuestionButton");
 const questionForm = document.getElementById("questionForm");
 const cancelQuestionButton = document.getElementById("cancelQuestionButton");
 const formMessage = document.getElementById("formMessage");
+const questionSearch = document.querySelector(".search");
 
+function filterQuestions() {
+    const searchTerm = questionSearch.value.trim().toLowerCase();
+
+    document.querySelectorAll(".question-card").forEach(card => {
+        card.hidden = !card.textContent.toLowerCase().includes(searchTerm);
+    });
+}
 
 askQuestionButton.addEventListener("click", () => {
     questionForm.hidden = false;
     formMessage.textContent = "";
 });
 
+questionSearch.addEventListener("input", filterQuestions);
 
 cancelQuestionButton.addEventListener("click", () => {
     questionForm.hidden = true;
