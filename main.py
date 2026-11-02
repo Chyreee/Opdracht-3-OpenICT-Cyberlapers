@@ -195,6 +195,21 @@ def get_questions():
     finally:
         conn.close()
 
+@app.get("/api/questions/search")
+def search_questions(query: str):
+    conn = get_db_connection()
+
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT question_text, title
+            FROM questions
+            WHERE question_text ILIKE %s OR title ILIKE %s
+            """,
+            (f"%{query}%", f"%{query}%")
+        )
+
+        results = cur.fetchall()
 
 @app.post("/api/questions")
 def create_question(data: QuestionData):
