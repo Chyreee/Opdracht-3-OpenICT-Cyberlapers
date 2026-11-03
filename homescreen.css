@@ -126,6 +126,7 @@ body {
 /* Profile button */
 
 .user {
+    background-image: url("Profile icon.png");
     position: absolute;
     top: 50%;
     right: 28px;
