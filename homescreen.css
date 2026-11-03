@@ -18,7 +18,7 @@ body {
 }
 
 body {
-    padding: 10px 16px;
+    padding: 5px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -33,7 +33,7 @@ body {
 
 .browser {
     width: 100%;
-    height: calc(100vh - 20px);
+    height: calc(100vh - 10px);
     min-height: 610px;
     margin: 0 auto;
     overflow: hidden;
@@ -125,11 +125,9 @@ body {
 /* Profile button */
 
 .user {
-    background-image: url("Profile icon.png");
-    position: absolute;
-    top: 50%;
-    right: 28px;
-    transform: translateY(-50%);
+    position: fixed;
+    top: 15px;
+    right: 160px;
 
     width: 34px;
     height: 34px;
@@ -166,7 +164,7 @@ body {
     position: fixed;
     top: 15px;
     right: 200px;
-    z-index: 100
+    z-index: 1000;
 }
 
 .notification {
@@ -548,12 +546,12 @@ body {
 @media (max-width: 760px) {
 
     body {
-        padding: 6px;
+        padding: 5px;
     }
 
     .browser {
         height: auto;
-        min-height: 100vh;
+        min-height: calc(100vh - 10px);
         overflow: visible;
     }
 
@@ -576,11 +574,11 @@ body {
     }
 
     .user {
-        right: 8px;
+        right: 15px;
+    }
 
-        display: flex;
-        width: 34px;
-        height: 34px;
+    .notification-container {
+        right: 55px;
     }
 
     .layout {
