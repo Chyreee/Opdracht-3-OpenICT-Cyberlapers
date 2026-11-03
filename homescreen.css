@@ -33,7 +33,6 @@ body {
 
 .browser {
     width: 100%;
-    max-width: 1200px;
     height: calc(100vh - 20px);
     min-height: 610px;
     margin: 0 auto;
@@ -617,4 +616,89 @@ body {
         min-height: 120px;
         border-radius: 6px;
     }
+}
+
+/* ================================
+   QUESTION POPUP
+================================ */
+
+.question-card {
+    cursor: pointer;
+}
+
+.question-card:hover {
+    border-color: #784BA5;
+}
+
+#questionDialog {
+    width: min(600px, 92vw);
+    max-height: 85vh;
+    padding: 20px;
+    overflow-y: auto;
+    background: #fff;
+    border: 2px solid #555b60;
+    border-radius: 15px;
+}
+
+#questionDialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+#closeDialogButton {
+    float: right;
+    padding: 4px 10px;
+    color: #fff;
+    background: #784BA5;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#dialogMeta {
+    color: #555b60;
+    font-size: 13px;
+}
+
+#dialogCode {
+    padding: 10px;
+    overflow-x: auto;
+    background: #dce0e5;
+    border-radius: 5px;
+    font-size: 13px;
+} 
+
+#commentList {
+    list-style: none;
+    margin: 0 0 10px;
+    padding: 0;
+    text-align: left;
+}
+
+#commentList li {
+    margin-bottom: 6px;
+    padding: 6px 8px;
+    background: #f0f1f3;
+    border-left: 3px solid #784BA5;
+    overflow-wrap: anywhere;
+}
+
+#commentForm {
+    display: flex;
+    gap: 6px;
+}
+
+#commentForm input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #9da8b3;
+    border-radius: 5px;
+}
+
+#commentForm button {
+    padding: 8px 12px;
+    color: #fff;
+    background: #784BA5;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }

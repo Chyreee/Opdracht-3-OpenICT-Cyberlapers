@@ -193,10 +193,24 @@
         </main>
 
     </div>
+    <dialog id="questionDialog">
+    <button type="button" id="closeDialogButton" aria-label="Close">X</button>
 
+    <h2 id="dialogTitle"></h2>
+    <p id="dialogMeta"></p>
+    <p id="dialogText"></p>
+    <pre id="dialogCode"></pre>
 
-    <!-- JAVASCRIPT -->
+    <div id="commentsArea">
+    <h3>Comments</h3>
+    <ul id="commentList"></ul>
+
+    <form id="commentForm">
+        <input type="text" id="commentInput" placeholder="Add a comment" required>
+        <button type="submit">Post</button>
+    </form>
+</div>
+</dialog>
     <script src="homescreen.js"></script>
-
 </body>
 </html>
