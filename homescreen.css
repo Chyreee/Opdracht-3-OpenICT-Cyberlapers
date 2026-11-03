@@ -126,6 +126,7 @@ body {
 /* Profile button */
 
 .user {
+    position: fixed;
     top: 15px;
     right: 40px;
 
