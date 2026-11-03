@@ -3,6 +3,51 @@ const searchInput = document.getElementById("searchInput");
 
 let allQuestions = [];
 
+const commentList = document.getElementById("commentList");
+const commentForm = document.getElementById("commentForm");
+const commentInput = document.getElementById("commentInput");
+
+commentForm.addEventListener("submit", event => {
+    event.preventDefault();
+
+    const text = commentInput.value.trim();
+    if (text === "") return;
+
+    const item = document.createElement("li");
+    item.textContent = text;
+    commentList.appendChild(item);
+
+    commentInput.value = "";
+
+});
+const questionDialog = document.getElementById("questionDialog");
+const dialogTitle = document.getElementById("dialogTitle");
+const dialogMeta = document.getElementById("dialogMeta");
+const dialogText = document.getElementById("dialogText");
+const dialogCode = document.getElementById("dialogCode");
+const closeDialogButton = document.getElementById("closeDialogButton");
+
+function openQuestion(question) {
+    commentList.innerHTML = "";
+    commentInput.value = "";
+    dialogTitle.textContent = question.title;
+    dialogMeta.textContent = `${question.beroepsrol} - Year ${question.study_year}`;
+    dialogText.textContent = question.question_text;
+    dialogCode.textContent = question.code;
+
+    questionDialog.showModal();
+}
+
+closeDialogButton.addEventListener("click", () => {
+    questionDialog.close();
+});
+
+questionDialog.addEventListener("click", event => {
+    if (event.target === questionDialog) {
+        questionDialog.close();
+    }
+});
+
 
 function displayQuestions(questions, questionsSection) {
     questions.forEach(question => {
@@ -31,6 +76,8 @@ function displayQuestions(questions, questionsSection) {
         card.appendChild(heading);
         card.appendChild(description);
         card.appendChild(meta);
+
+                card.addEventListener("click", () => openQuestion(question));
 
         questionsSection.appendChild(card);
     });
