@@ -161,6 +161,104 @@ body {
 }
 
 
+/* Notification dropdown */
+
+.notification-container {
+    position: fixed;
+    top: 15px;
+    right: 200px;
+    z-index: 1000;
+}
+
+.notification {
+    list-style: none;
+
+    width: 34px;
+    height: 34px;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #9da8b3;
+    border-radius: 50%;
+
+    background: #784BA5;
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.notification::-webkit-details-marker {
+    display: none;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: 42px;
+    right: 0;
+    width: 260px;
+    padding: 14px;
+
+    color: #202326;
+    background: #fff;
+    border: 1px solid #555b60;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
+}
+
+.notification-dropdown p {
+    margin: 0;
+}
+
+.user:hover {
+    background: #633b8e;
+}
+
+.notification:hover {
+    background: #633b8e;
+}
+
+.user img {
+    display: block;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.notification img {
+    display: block;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.notification .notification-hover {
+    display: none;
+}
+
+.notification:hover .notification-default {
+    display: none;
+}
+
+.notification:hover .notification-hover {
+    display: block;
+}
+
+.user:focus-visible {
+    outline: 2px solid #202326;
+    outline-offset: 3px;
+}
+
+.notification:focus-visible {
+    outline: 2px solid #202326;
+    outline-offset: 3px;
+}
+
+
 /* ================================
    MAIN LAYOUT
 ================================ */
