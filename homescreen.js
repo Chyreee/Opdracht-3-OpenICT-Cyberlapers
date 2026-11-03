@@ -1,6 +1,9 @@
 
 const searchInput = document.getElementById("searchInput");
 
+let allQuestions = [];
+
+
 function displayQuestions(questions, questionsSection) {
     questions.forEach(question => {
         const card = document.createElement("div");
@@ -31,8 +34,33 @@ function displayQuestions(questions, questionsSection) {
 
         questionsSection.appendChild(card);
     });
-
 }
+
+
+// SEARCH FUNCTIONALITY
+
+function filterQuestions() {
+    const searchValue = searchInput.value.toLowerCase().trim();
+
+    const filteredQuestions = allQuestions.filter(question =>
+        question.title.toLowerCase().includes(searchValue) ||
+        question.question_text.toLowerCase().includes(searchValue)
+    );
+
+    const questionsSection = document.querySelector(".questions");
+
+    questionsSection.querySelectorAll(".question-card").forEach(card => {
+        card.remove();
+    });
+
+    displayQuestions(filteredQuestions, questionsSection);
+}
+
+
+searchInput.addEventListener("input", filterQuestions);
+
+
+// LOAD QUESTIONS
 
 async function loadQuestions() {
     try {
@@ -42,19 +70,25 @@ async function loadQuestions() {
             throw new Error("Could not load questions.");
         }
 
-        const questions = await response.json();
+        allQuestions = await response.json();
+
+        console.log("Questions loaded:", allQuestions);
+
         const questionsSection = document.querySelector(".questions");
 
         questionsSection.querySelectorAll(".question-card").forEach(card => {
             card.remove();
         });
-        displayQuestions(questions, questionsSection);
 
-        
+        displayQuestions(allQuestions, questionsSection);
+
     } catch (error) {
         console.error("Error loading questions:", error);
     }
 }
+
+
+// QUESTION FORM
 
 const askQuestionButton = document.getElementById("askQuestionButton");
 const questionForm = document.getElementById("questionForm");
@@ -78,7 +112,6 @@ cancelQuestionButton.addEventListener("click", () => {
 questionForm.addEventListener("submit", async event => {
     event.preventDefault();
 
-   
     const userId = localStorage.getItem("userId");
 
     if (!userId) {
