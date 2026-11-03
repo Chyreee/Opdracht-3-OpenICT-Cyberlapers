@@ -126,9 +126,10 @@ body {
 /* Profile button */
 
 .user {
-    position: fixed;
-    top: 15px;
-    right: 40px;
+    position: absolute;
+    top: 50%;
+    right: 28px;
+    transform: translateY(-50%);
 
     width: 34px;
     height: 34px;
@@ -477,9 +478,7 @@ body {
     }
 
     .user {
-        position: fixed;
-        top: 15px;
-        right: 15px;
+        right: 8px;
 
         display: flex;
         width: 34px;
