@@ -25,4 +25,7 @@ done
 sudo mkdir -p "$DEST/assets"
 sudo cp "$SOURCE"/assets/* "$DEST/assets/"
 
+sudo mkdir -p "$DEST/sounds"
+sudo cp "$SOURCE"/sounds/* "$DEST/sounds/"
+
 echo "Website deployed successfully!"

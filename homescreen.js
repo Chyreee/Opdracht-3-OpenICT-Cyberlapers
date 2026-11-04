@@ -21,6 +21,64 @@ window.addEventListener("message", event => {
 
 let allQuestions = [];
 
+const notificationSounds = {
+    Question: "sounds/1.wav",
+    Answer: "sounds/2.wav"
+};
+const decodedNotificationSounds = new Map();
+let notificationAudioContext = null;
+
+async function prepareNotificationSound(type) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextClass) {
+        console.warn("Audio notifications are not supported in this browser.");
+        return null;
+    }
+
+    try {
+        if (!notificationAudioContext) {
+            notificationAudioContext = new AudioContextClass();
+        }
+
+        if (notificationAudioContext.state === "suspended") {
+            await notificationAudioContext.resume();
+        }
+
+        if (!decodedNotificationSounds.has(type)) {
+            const response = await fetch(notificationSounds[type]);
+            if (!response.ok) {
+                throw new Error(`Could not load ${notificationSounds[type]} (${response.status}).`);
+            }
+
+            const sound = await notificationAudioContext.decodeAudioData(
+                await response.arrayBuffer()
+            );
+            decodedNotificationSounds.set(type, sound);
+        }
+
+        return decodedNotificationSounds.get(type);
+    } catch (error) {
+        console.warn(`Could not prepare the ${type.toLowerCase()} notification sound:`, error);
+        return null;
+    }
+}
+
+function playNotificationSound(sound) {
+    if (!sound || !notificationAudioContext) {
+        return;
+    }
+
+    try {
+        const source = notificationAudioContext.createBufferSource();
+        source.buffer = sound;
+        source.connect(notificationAudioContext.destination);
+        source.start();
+    } catch (error) {
+        console.warn("Could not play notification sound:", error);
+    }
+}
+
 const commentList = document.getElementById("commentList");
 const commentForm = document.getElementById("commentForm");
 const commentInput = document.getElementById("commentInput");
@@ -31,12 +89,13 @@ commentForm.addEventListener("submit", event => {
     const text = commentInput.value.trim();
     if (text === "") return;
 
+    const answerSound = prepareNotificationSound("Answer");
     const item = document.createElement("li");
     item.textContent = text;
     commentList.appendChild(item);
 
     commentInput.value = "";
-
+    void answerSound.then(playNotificationSound);
 });
 const questionDialog = document.getElementById("questionDialog");
 const dialogTitle = document.getElementById("dialogTitle");
@@ -184,6 +243,7 @@ questionForm.addEventListener("submit", async event => {
         return;
     }
 
+    const questionSound = prepareNotificationSound("Question");
     const question = {
         title: document.getElementById("title").value.trim(),
         question_text: document.getElementById("questionText").value.trim(),
@@ -208,6 +268,7 @@ questionForm.addEventListener("submit", async event => {
             throw new Error(data.detail || "Could not submit question.");
         }
 
+        void questionSound.then(playNotificationSound);
         alert("Question submitted successfully!");
 
         questionForm.reset();
