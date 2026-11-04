@@ -82,20 +82,125 @@ function playNotificationSound(sound) {
 const commentList = document.getElementById("commentList");
 const commentForm = document.getElementById("commentForm");
 const commentInput = document.getElementById("commentInput");
+let activeQuestionId = null;
 
-commentForm.addEventListener("submit", event => {
+function displayComment(comment) {
+    const item = document.createElement("li");
+
+    const author = document.createElement("strong");
+    author.textContent = comment.username;
+
+    const text = document.createElement("span");
+    text.textContent = `: ${comment.comment_text}`;
+
+    item.appendChild(author);
+    item.appendChild(text);
+
+    commentList.appendChild(item);
+}
+
+
+async function loadQuestionComments(questionId) {
+    commentList.innerHTML = "";
+
+    const loadingMessage = document.createElement("li");
+    loadingMessage.textContent = "Loading comments...";
+    commentList.appendChild(loadingMessage);
+
+    try {
+        const response = await fetch(
+            `/api/questions/${questionId}/comments`
+        );
+
+        if (!response.ok) {
+            throw new Error("Could not load comments.");
+        }
+
+        const comments = await response.json();
+
+        // Make sure we're still viewing the same question.
+        if (activeQuestionId !== questionId) return;
+
+        commentList.innerHTML = "";
+
+        if (comments.length === 0) {
+            const emptyMessage = document.createElement("li");
+            emptyMessage.textContent = "No comments yet.";
+            commentList.appendChild(emptyMessage);
+            return;
+        }
+
+        comments.forEach(displayComment);
+
+    } catch (error) {
+        console.error("Error loading comments:", error);
+
+        if (activeQuestionId === questionId) {
+            commentList.innerHTML = "";
+
+            const errorMessage = document.createElement("li");
+            errorMessage.textContent = "Could not load comments.";
+            commentList.appendChild(errorMessage);
+        }
+    }
+}
+
+commentForm.addEventListener("submit", async event => {
     event.preventDefault();
 
     const text = commentInput.value.trim();
+
     if (text === "") return;
 
-    const answerSound = prepareNotificationSound("Answer");
-    const item = document.createElement("li");
-    item.textContent = text;
-    commentList.appendChild(item);
+    const userId = localStorage.getItem("userId");
 
-    commentInput.value = "";
-    void answerSound.then(playNotificationSound);
+    if (!userId) {
+        alert("Please log in before commenting.");
+        return;
+    }
+
+    if (!activeQuestionId) {
+        alert("No question selected.");
+        return;
+    }
+
+    const questionId = activeQuestionId;
+    const answerSound = prepareNotificationSound("Answer");
+
+    try {
+        const response = await fetch(
+            `/api/questions/${questionId}/comments`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    comment_text: text,
+                    author_id: Number(userId)
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Could not submit comment.");
+        }
+
+        commentInput.value = "";
+
+        // Reload comments from the database.
+        if (activeQuestionId === questionId) {
+            await loadQuestionComments(questionId);
+        }
+
+        void answerSound.then(playNotificationSound);
+
+    } catch (error) {
+        console.error("Error submitting comment:", error);
+        alert(error.message || "Could not submit comment.");
+    }
 });
 const questionDialog = document.getElementById("questionDialog");
 const dialogTitle = document.getElementById("dialogTitle");
@@ -105,14 +210,19 @@ const dialogCode = document.getElementById("dialogCode");
 const closeDialogButton = document.getElementById("closeDialogButton");
 
 function openQuestion(question) {
+    activeQuestionId = question.id;
+
     commentList.innerHTML = "";
     commentInput.value = "";
+
     dialogTitle.textContent = question.title;
     dialogMeta.textContent = `${question.beroepsrol} - Year ${question.study_year}`;
     dialogText.textContent = question.question_text;
     dialogCode.textContent = question.code;
 
     questionDialog.showModal();
+
+    loadQuestionComments(question.id);
 }
 
 closeDialogButton.addEventListener("click", () => {

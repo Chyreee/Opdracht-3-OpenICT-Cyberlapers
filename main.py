@@ -18,6 +18,10 @@ class QuestionData(BaseModel):
     study_year: int = Field(ge=1, le=4)
     beroepsrol: str
 
+class CommentData(BaseModel):
+    comment_text: str = Field(min_length=1)
+    author_id: int = Field(gt=0)
+
 
 class RoomReservationData(BaseModel):
     reservation_key: str = Field(min_length=1, max_length=100)
@@ -226,6 +230,116 @@ def get_room_reservations(user_id: int | None = None):
     finally:
         conn.close()
 
+
+@app.get("/api/questions/{question_id}/comments")
+def get_question_comments(question_id: int):
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT
+                    comments.id,
+                    comments.comment_text,
+                    comments.author_id,
+                    users.username,
+                    comments.created_at
+                FROM comments
+                JOIN users ON comments.author_id = users.id
+                WHERE comments.question_id = %s
+                ORDER BY comments.created_at ASC
+                """,
+                (question_id,)
+            )
+
+            rows = cur.fetchall()
+
+        return [
+            {
+                "id": row[0],
+                "comment_text": row[1],
+                "author_id": row[2],
+                "username": row[3],
+                "created_at": row[4].isoformat()
+            }
+            for row in rows
+        ]
+
+    finally:
+        conn.close()
+
+
+@app.post("/api/questions/{question_id}/comments", status_code=201)
+def create_question_comment(question_id: int, data: CommentData):
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cur:
+
+            # Check whether the question exists.
+            cur.execute(
+                "SELECT id FROM questions WHERE id = %s",
+                (question_id,)
+            )
+
+            if cur.fetchone() is None:
+                raise HTTPException(status_code=404, detail="Question not found")
+
+            # Check whether the author exists.
+            cur.execute(
+                "SELECT id FROM users WHERE id = %s",
+                (data.author_id,)
+            )
+
+            if cur.fetchone() is None:
+                raise HTTPException(status_code=404, detail="User not found")
+
+            # Save the comment.
+            cur.execute(
+                """
+                INSERT INTO comments (question_id, author_id, comment_text)
+                VALUES (%s, %s, %s)
+                RETURNING id
+                """,
+                (question_id, data.author_id, data.comment_text.strip())
+            )
+
+            comment_id = cur.fetchone()[0]
+
+            # Retrieve the saved comment with the author's username.
+            cur.execute(
+                """
+                SELECT comments.id,
+                       comments.comment_text,
+                       comments.author_id,
+                       users.username,
+                       comments.created_at
+                FROM comments
+                JOIN users ON comments.author_id = users.id
+                WHERE comments.id = %s
+                """,
+                (comment_id,)
+            )
+
+            row = cur.fetchone()
+
+        conn.commit()
+
+        return {
+            "id": row[0],
+            "comment_text": row[1],
+            "author_id": row[2],
+            "username": row[3],
+            "created_at": row[4].isoformat()
+        }
+
+    except HTTPException:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
 
 @app.post("/api/room-reservations", status_code=201)
 def create_room_reservation(data: RoomReservationData):
