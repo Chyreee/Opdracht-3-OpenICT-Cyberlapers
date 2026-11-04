@@ -19,6 +19,22 @@ class QuestionData(BaseModel):
     beroepsrol: str
 
 
+class RoomReservationData(BaseModel):
+    reservation_key: str = Field(min_length=1, max_length=100)
+    user_id: int = Field(gt=0)
+    title: str = Field(default="Studieruimte.....", max_length=100)
+    description: str = Field(default="", max_length=1000)
+
+
+class RoomReservationUpdateData(RoomReservationData):
+    pass
+
+
+class RoomReservationReleaseData(BaseModel):
+    reservation_key: str = Field(min_length=1, max_length=100)
+    user_id: int = Field(gt=0)
+
+
 app = FastAPI()
 
 password_hash = PasswordHash.recommended()
@@ -31,6 +47,23 @@ def get_db_connection():
         dbname="codeshare",
         user="codeshare",
         password="Cyberjoshua"
+    )
+
+
+def ensure_room_reservations_table(cur):
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS room_reservations (
+            reservation_key VARCHAR(100) PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            title VARCHAR(100) NOT NULL DEFAULT 'Studieruimte.....',
+            description TEXT NOT NULL DEFAULT '',
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+        """
+    )
+    cur.execute(
+        "ALTER TABLE room_reservations ADD COLUMN IF NOT EXISTS description TEXT NOT NULL DEFAULT ''"
     )
 
 
@@ -161,6 +194,176 @@ def get_user_profile(user_id: int):
         conn.close()
 
 
+@app.get("/api/room-reservations")
+def get_room_reservations(user_id: int | None = None):
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cur:
+            ensure_room_reservations_table(cur)
+            cur.execute(
+                """
+                SELECT reservation_key,
+                       COALESCE(user_id = %s, FALSE) AS is_mine,
+                       title,
+                       description
+                FROM room_reservations
+                """,
+                (user_id,)
+            )
+            rows = cur.fetchall()
+
+        conn.commit()
+        return [
+            {
+                "reservation_key": row[0],
+                "is_mine": row[1],
+                "title": row[2],
+                "description": row[3]
+            }
+            for row in rows
+        ]
+    finally:
+        conn.close()
+
+
+@app.post("/api/room-reservations", status_code=201)
+def create_room_reservation(data: RoomReservationData):
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cur:
+            ensure_room_reservations_table(cur)
+            cur.execute("SELECT id FROM users WHERE id = %s", (data.user_id,))
+            if cur.fetchone() is None:
+                raise HTTPException(status_code=404, detail="User not found")
+
+            cur.execute(
+                """
+                INSERT INTO room_reservations (reservation_key, user_id, title, description)
+                VALUES (%s, %s, %s, %s)
+                ON CONFLICT (reservation_key) DO NOTHING
+                RETURNING reservation_key, title, description
+                """,
+                (
+                    data.reservation_key,
+                    data.user_id,
+                    data.title.strip() or "Studieruimte.....",
+                    data.description.strip()
+                )
+            )
+            reservation = cur.fetchone()
+
+            if reservation is None:
+                conn.rollback()
+                raise HTTPException(
+                    status_code=409,
+                    detail="This room has already been reserved."
+                )
+
+        conn.commit()
+        return {
+            "reservation_key": reservation[0],
+            "is_mine": True,
+            "title": reservation[1],
+            "description": reservation[2]
+        }
+    except HTTPException:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.put("/api/room-reservations")
+def update_room_reservation(data: RoomReservationUpdateData):
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cur:
+            ensure_room_reservations_table(cur)
+            cur.execute(
+                """
+                UPDATE room_reservations
+                SET title = %s, description = %s
+                WHERE reservation_key = %s AND user_id = %s
+                RETURNING reservation_key, title, description
+                """,
+                (
+                    data.title.strip() or "Studieruimte.....",
+                    data.description.strip(),
+                    data.reservation_key,
+                    data.user_id
+                )
+            )
+            reservation = cur.fetchone()
+
+            if reservation is None:
+                cur.execute(
+                    "SELECT user_id FROM room_reservations WHERE reservation_key = %s",
+                    (data.reservation_key,)
+                )
+                existing = cur.fetchone()
+                if existing is None:
+                    raise HTTPException(status_code=404, detail="This room is not reserved.")
+                raise HTTPException(
+                    status_code=403,
+                    detail="Only the user who reserved this room can update it."
+                )
+
+        conn.commit()
+        return {
+            "reservation_key": reservation[0],
+            "is_mine": True,
+            "title": reservation[1],
+            "description": reservation[2]
+        }
+    except HTTPException:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.delete("/api/room-reservations")
+def delete_room_reservation(data: RoomReservationReleaseData):
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cur:
+            ensure_room_reservations_table(cur)
+            cur.execute(
+                """
+                DELETE FROM room_reservations
+                WHERE reservation_key = %s AND user_id = %s
+                RETURNING reservation_key
+                """,
+                (data.reservation_key, data.user_id)
+            )
+            deleted = cur.fetchone()
+
+            if deleted is None:
+                cur.execute(
+                    "SELECT user_id FROM room_reservations WHERE reservation_key = %s",
+                    (data.reservation_key,)
+                )
+                existing = cur.fetchone()
+                if existing is None:
+                    raise HTTPException(status_code=404, detail="This room is not reserved.")
+                raise HTTPException(
+                    status_code=403,
+                    detail="Only the user who reserved this room can cancel it."
+                )
+
+        conn.commit()
+        return {"reservation_key": deleted[0], "reserved": False}
+    except HTTPException:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
 @app.get("/api/questions")
 def get_questions():
     conn = get_db_connection()
@@ -278,4 +481,3 @@ def create_question(data: QuestionData):
 
     finally:
         conn.close()
-

@@ -563,6 +563,37 @@
             transition: transform 120ms ease, background-color 120ms ease;
         }
 
+        .study-space-target::after {
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% - 1px);
+            z-index: 3;
+            padding: 7px 11px;
+            transform: translate(-50%, 8px) scale(0.96);
+            border: 2px solid #159e87;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #202326;
+            content: attr(data-room-status);
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.2;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+            transition: opacity 140ms ease, transform 140ms ease;
+        }
+
+        .study-space-target.is-reserved::after {
+            border-color: #784ba5;
+        }
+
+        .study-space-target:hover::after,
+        .study-space-target:focus-visible::after {
+            transform: translate(-50%, 0) scale(1);
+            opacity: 1;
+        }
+
         .study-space-target.is-reserved::before {
             background: #8b5cf6;
         }
@@ -1040,7 +1071,7 @@
             <div class="dialog-fields">
                 <div class="dialog-field">
                     <label for="dialog-room-title">Titel</label>
-                    <input id="dialog-room-title" type="text" value="Studieruimte" maxlength="100">
+                    <input id="dialog-room-title" type="text" value="Studieruimte....." placeholder="Studieruimte....." maxlength="100">
                 </div>
                 <div class="dialog-field">
                     <label for="dialog-room-description">Beschrijving</label>
@@ -1049,10 +1080,9 @@
             </div>
             <div class="dialog-actions">
                 <button class="dialog-action" id="reserve-room" type="button">Reserveer ruimte</button>
-                <button class="dialog-action secondary" id="open-room" type="button">Open ruimte</button>
+                <button class="dialog-action secondary" id="release-room" type="button" hidden>Annuleer reservering</button>
             </div>
             <p class="dialog-note" id="dialog-reservation-status" aria-live="polite"></p>
-            <p class="dialog-note" id="dialog-action-status" aria-live="polite"></p>
         </div>
     </dialog>
 
@@ -1088,22 +1118,64 @@
         const roomDialog = document.getElementById("room-dialog");
         const dialogRoomTitle = document.getElementById("dialog-room-title");
         const dialogRoomDescription = document.getElementById("dialog-room-description");
-        const reservationStorageKey = "hl15-room-reservations";
         const reservationStatus = document.getElementById("dialog-reservation-status");
-        const actionStatus = document.getElementById("dialog-action-status");
-        let reservations = new Set();
+        const reserveRoomButton = document.getElementById("reserve-room");
+        const releaseRoomButton = document.getElementById("release-room");
+        const defaultRoomTitle = "Studieruimte.....";
+        const reservationEndpoint = "/api/room-reservations";
+        let reservations = new Map();
         const roomDrafts = new Map();
-        let reservationStorageAvailable = true;
+        let reservationServiceAvailable = false;
 
-        try {
-            const savedReservations = JSON.parse(localStorage.getItem(reservationStorageKey) || "[]");
-            if (!Array.isArray(savedReservations) || savedReservations.some((key) => typeof key !== "string")) {
-                throw new Error("Ongeldige reserveringsgegevens");
+        function getCurrentUserId() {
+            const userId = Number(localStorage.getItem("userId"));
+            return Number.isInteger(userId) && userId > 0 ? userId : null;
+        }
+
+        async function refreshReservations() {
+            try {
+                const userId = getCurrentUserId();
+                const query = userId ? `?user_id=${encodeURIComponent(userId)}` : "";
+                const response = await fetch(`${reservationEndpoint}${query}`);
+                if (!response.ok) {
+                    throw new Error(`Reserveringen konden niet worden geladen (${response.status}).`);
+                }
+
+                const data = await response.json();
+                if (!Array.isArray(data) || data.some((reservation) =>
+                    typeof reservation.reservation_key !== "string" ||
+                    typeof reservation.is_mine !== "boolean"
+                )) {
+                    throw new Error("De server stuurde ongeldige reserveringsgegevens.");
+                }
+
+                reservations = new Map(data.map((reservation) => [
+                    reservation.reservation_key,
+                    {
+                        isMine: reservation.is_mine,
+                        title: typeof reservation.title === "string" ? reservation.title : defaultRoomTitle,
+                        description: typeof reservation.description === "string" ? reservation.description : ""
+                    }
+                ]));
+                reservationServiceAvailable = true;
+                roomTargets.querySelectorAll(".room-target").forEach((button) => {
+                    updateRoomTargetReservation(button, button.dataset.reservationKey);
+                });
+                if (roomDialog.open) {
+                    updateReservationStatus(roomDialog.dataset.reservationKey);
+                }
+                return true;
+            } catch (error) {
+                console.error("Reserveringsstatus kon niet worden bijgewerkt.", error);
+                reservationServiceAvailable = false;
+                roomTargets.querySelectorAll(".room-target").forEach((button) => {
+                    updateRoomTargetReservation(button, button.dataset.reservationKey);
+                });
+                if (roomDialog.open) {
+                    updateReservationStatus(roomDialog.dataset.reservationKey);
+                }
+                return false;
             }
-            reservations = new Set(savedReservations);
-        } catch (error) {
-            console.error("Reserveringen konden niet worden geladen.", error);
-            reservationStorageAvailable = false;
         }
 
         const previousButton = document.getElementById("previous-slide");
@@ -1147,7 +1219,7 @@
                 button.style.setProperty("--target-width", `${room.width}%`);
                 button.style.setProperty("--target-height", `${room.height}%`);
                 updateRoomTargetReservation(button, reservationKey);
-                button.addEventListener("click", (event) => {
+                button.addEventListener("click", async (event) => {
                     const bounds = mapStage.getBoundingClientRect();
                     const selectedRoom = event.detail === 0 ? room : rooms.reduce((nearest, candidate) => {
                         const clickX = event.clientX - bounds.left;
@@ -1158,7 +1230,7 @@
                         const candidateY = candidate.y / 100 * bounds.height - clickY;
                         return candidateX ** 2 + candidateY ** 2 < nearestX ** 2 + nearestY ** 2 ? candidate : nearest;
                     }, rooms[0]);
-                    openRoomDialog(
+                    await openRoomDialog(
                         selectedRoom.number,
                         workStudyRoomNumbers.has(selectedRoom.number)
                             ? "Algemene werk- en studieomgeving"
@@ -1178,7 +1250,6 @@
                 const reservationKey = `${floor.level}:study-space-${index + 1}`;
                 button.className = "room-target study-space-target";
                 button.type = "button";
-                button.title = "Algemene studieruimte";
                 button.dataset.reservationKey = reservationKey;
                 button.setAttribute(
                     "aria-label",
@@ -1187,25 +1258,32 @@
                 button.style.left = `${spot.x}%`;
                 button.style.top = `${spot.y}%`;
                 updateRoomTargetReservation(button, reservationKey);
-                button.addEventListener("click", () => {
-                    openRoomDialog("", "Algemene studieruimte", floor, `study-space-${index + 1}`);
+                button.addEventListener("click", async () => {
+                    await openRoomDialog("", "Algemene studieruimte", floor, `study-space-${index + 1}`);
                 });
                 roomTargets.append(button);
             });
         }
 
-        function openRoomDialog(roomNumber, category, floor, targetId) {
+        async function openRoomDialog(roomNumber, category, floor, targetId) {
+            await refreshReservations();
             const key = `${floor.level}:${targetId}`;
-            const draft = roomDrafts.get(key) || { title: "Studieruimte", description: "" };
+            const reservation = reservations.get(key);
+            const draft = roomDrafts.get(key);
             document.getElementById("dialog-title").textContent = "Studieruimte";
             document.getElementById("dialog-room-number").textContent = roomNumber;
             document.getElementById("dialog-room-row").hidden = !roomNumber;
             document.getElementById("dialog-floor").textContent = floor.label;
             document.getElementById("dialog-category").textContent = category;
             document.getElementById("dialog-category-row").hidden = !category;
-            dialogRoomTitle.value = draft.title;
-            dialogRoomDescription.value = draft.description;
-            actionStatus.textContent = "";
+            dialogRoomTitle.value = reservation?.isMine
+                ? reservation.title
+                : reservation
+                    ? reservation.title
+                    : draft?.title || defaultRoomTitle;
+            dialogRoomDescription.value = reservation
+                ? reservation.description
+                : draft?.description || "";
             roomDialog.dataset.reservationKey = key;
             updateReservationStatus(key);
             roomDialog.showModal();
@@ -1222,14 +1300,21 @@
         }
 
         function updateRoomTargetReservation(button, key) {
-            const isReserved = reservations.has(key);
+            const reservation = reservations.get(key);
+            const isReserved = Boolean(reservation);
             button.classList.toggle("is-reserved", isReserved);
-            const description = button.classList.contains("study-space-target")
+            const roomDescription = button.classList.contains("study-space-target")
                 ? `Details van algemene studieruimte, punt ${key.split("study-space-")[1]}`
                 : `Details van kamer ${key.slice(key.indexOf(":") + 1)}`;
+            const status = !reservationServiceAvailable
+                ? "Status niet beschikbaar"
+                : isReserved
+                    ? "Bezet"
+                    : "Beschikbaar";
+            button.dataset.roomStatus = status;
             button.setAttribute(
                 "aria-label",
-                `${description}${isReserved ? ", gereserveerd" : ""}`
+                `${roomDescription}, ${status.toLowerCase()}`
             );
         }
 
@@ -1239,29 +1324,33 @@
                     updateRoomTargetReservation(button, key);
                 }
             });
-            if (!reservationStorageAvailable) {
-                reservationStatus.textContent = "Reserveringen konden niet worden geladen of opgeslagen in deze browser.";
+            const reservation = reservations.get(key);
+            const userId = getCurrentUserId();
+            if (!reservationServiceAvailable) {
+                reserveRoomButton.disabled = true;
+                releaseRoomButton.hidden = true;
+                dialogRoomTitle.disabled = true;
+                dialogRoomDescription.disabled = true;
+                reservationStatus.textContent = "De reserveringsstatus kan niet worden gecontroleerd. Probeer het later opnieuw.";
                 return;
             }
-            const isReserved = reservations.has(key);
-            document.getElementById("reserve-room").textContent = isReserved
-                ? "Annuleer reservering"
-                : "Reserveer ruimte";
-            reservationStatus.textContent = isReserved
-                ? "Deze ruimte is gereserveerd in deze browser."
-                : "Deze ruimte is niet gereserveerd.";
-        }
-
-        function saveReservations() {
-            try {
-                localStorage.setItem(reservationStorageKey, JSON.stringify([...reservations]));
-                return true;
-            } catch (error) {
-                console.error("Reservering kon niet worden opgeslagen.", error);
-                reservationStorageAvailable = false;
-                reservationStatus.textContent = "De reservering kon niet in deze browser worden opgeslagen.";
-                return false;
-            }
+            reserveRoomButton.textContent = reservation?.isMine
+                ? "Wijzigingen opslaan"
+                : reservation
+                    ? "Gereserveerd door andere gebruiker"
+                    : "Reserveer ruimte";
+            reserveRoomButton.disabled = !userId || (Boolean(reservation) && !reservation.isMine);
+            releaseRoomButton.hidden = !reservation?.isMine;
+            releaseRoomButton.disabled = !userId || !reservation?.isMine;
+            dialogRoomTitle.disabled = !userId || (Boolean(reservation) && !reservation.isMine);
+            dialogRoomDescription.disabled = !userId || (Boolean(reservation) && !reservation.isMine);
+            reservationStatus.textContent = !userId
+                ? "Log in om een studieruimte te reserveren."
+                : reservation?.isMine
+                    ? "Deze ruimte is door jou gereserveerd."
+                    : reservation
+                        ? "Deze ruimte is door een andere gebruiker gereserveerd."
+                        : "Deze ruimte is beschikbaar.";
         }
 
         function showRoomFilter(floor) {
@@ -1331,6 +1420,7 @@
                     "Selecteer een kamernummer voor de ruimtegegevens";
                 showRoomFilter(floor);
             }
+            void refreshReservations();
 
             fitFullscreenMap();
             previousButton.disabled = currentSlide === 0;
@@ -1386,30 +1476,107 @@
         mapImage.addEventListener("load", fitFullscreenMap);
         window.addEventListener("resize", fitFullscreenMap);
         document.getElementById("close-dialog").addEventListener("click", () => roomDialog.close());
-        document.getElementById("reserve-room").addEventListener("click", () => {
+        reserveRoomButton.addEventListener("click", async (event) => {
             const key = roomDialog.dataset.reservationKey;
-            const wasReserved = reservations.has(key);
-            if (reservations.has(key)) {
-                reservations.delete(key);
-            } else {
-                reservations.add(key);
-            }
-            if (saveReservations()) {
+            const userId = getCurrentUserId();
+            const reservation = reservations.get(key);
+            const reserveButton = event.currentTarget;
+            if (!userId || !reservationServiceAvailable) {
                 updateReservationStatus(key);
-            } else if (wasReserved) {
-                reservations.add(key);
-            } else {
+                return;
+            }
+
+            const isUpdating = reservation?.isMine === true;
+            if (reservation && !isUpdating) {
+                updateReservationStatus(key);
+                return;
+            }
+
+            reserveButton.disabled = true;
+            try {
+                const response = await fetch(reservationEndpoint, {
+                    method: isUpdating ? "PUT" : "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        reservation_key: key,
+                        user_id: userId,
+                        title: dialogRoomTitle.value.trim() || defaultRoomTitle,
+                        description: dialogRoomDescription.value.trim()
+                    })
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    if (response.status === 409 || response.status === 403 || response.status === 404) {
+                        await refreshReservations();
+                        reservationStatus.textContent = data.detail || "De reservering is intussen door een andere gebruiker gewijzigd.";
+                        return;
+                    }
+                    throw new Error(data.detail || "De reservering kon niet worden bijgewerkt.");
+                }
+
+                reservations.set(key, {
+                    isMine: true,
+                    title: data.title,
+                    description: data.description
+                });
+                roomDrafts.delete(key);
+                reservationServiceAvailable = true;
+                updateReservationStatus(key);
+                reservationStatus.textContent = isUpdating
+                    ? "Titel en beschrijving zijn opgeslagen."
+                    : "De studieruimte is gereserveerd.";
+            } catch (error) {
+                console.error("Reservering kon niet worden bijgewerkt.", error);
+                reservationStatus.textContent = error.message || "De reservering kon niet worden bijgewerkt.";
+                await refreshReservations();
+            }
+        });
+        releaseRoomButton.addEventListener("click", async () => {
+            const key = roomDialog.dataset.reservationKey;
+            const userId = getCurrentUserId();
+            if (!userId || !reservations.get(key)?.isMine || !reservationServiceAvailable) {
+                updateReservationStatus(key);
+                return;
+            }
+
+            releaseRoomButton.disabled = true;
+            try {
+                const response = await fetch(reservationEndpoint, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ reservation_key: key, user_id: userId })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || "De reservering kon niet worden geannuleerd.");
+                }
+
                 reservations.delete(key);
+                roomDrafts.delete(key);
+                dialogRoomTitle.value = defaultRoomTitle;
+                dialogRoomDescription.value = "";
+                reservationServiceAvailable = true;
+                updateReservationStatus(key);
+                reservationStatus.textContent = "Reservering geannuleerd. Titel en beschrijving zijn leeggemaakt.";
+            } catch (error) {
+                console.error("Reservering kon niet worden geannuleerd.", error);
+                reservationStatus.textContent = error.message || "De reservering kon niet worden geannuleerd.";
+                await refreshReservations();
+            } finally {
+                if (roomDialog.open && roomDialog.dataset.reservationKey === key) {
+                    updateReservationStatus(key);
+                }
             }
         });
         dialogRoomTitle.addEventListener("input", updateRoomDraft);
         dialogRoomDescription.addEventListener("input", updateRoomDraft);
-        document.getElementById("open-room").addEventListener("click", () => {
-            dialogRoomTitle.value = "";
-            dialogRoomDescription.value = "";
-            updateRoomDraft();
-            actionStatus.textContent = "De ruimte is geopend; titel en beschrijving zijn leeggemaakt.";
-        });
+        void refreshReservations();
+        window.setInterval(() => {
+            if (!slidePanel.hidden && !document.hidden) {
+                void refreshReservations();
+            }
+        }, 10000);
         roomDialog.addEventListener("click", (event) => {
             if (event.target === roomDialog) {
                 roomDialog.close();
