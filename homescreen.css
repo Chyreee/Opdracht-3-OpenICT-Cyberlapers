@@ -217,7 +217,7 @@ body {
     background: #633b8e;
 }
 
-.user img {
+.user .profile-icon {
     display: block;
     width: 24px;
     height: 24px;
@@ -225,7 +225,7 @@ body {
     pointer-events: none;
 }
 
-.notification img {
+.notification svg {
     display: block;
     width: 24px;
     height: 24px;
