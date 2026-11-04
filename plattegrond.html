@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#111719">
-    <title>Heidelberglaan 15 | Verdiepingen</title>
+    <meta name="theme-color" content="#1CCBAD">
+    <title>Studieruimtes HL 15</title>
     <style>
         * {
             box-sizing: border-box;
         }
 
         :root {
-            color-scheme: dark;
-            --background: #111719;
-            --panel: #1a2224;
-            --panel-raised: #222c2e;
-            --border: #344143;
-            --text: #f2f6f5;
-            --muted: #9caaa8;
+            --background: #1ccbad;
+            --panel: #ffffff;
+            --panel-raised: #f0f1f3;
+            --border: #555b60;
+            --text: #202326;
+            --muted: #555b60;
             --mint: #1ccbad;
             --purple: #784ba5;
         }
@@ -26,9 +25,7 @@
             min-width: 320px;
             min-height: 100vh;
             margin: 0;
-            background:
-                radial-gradient(ellipse at 68% -18%, #784ba52b, transparent 44%),
-                var(--background);
+            background: var(--background);
             color: var(--text);
             font-family: Arial, sans-serif;
             line-height: 1.5;
@@ -75,10 +72,10 @@
             width: 36px;
             height: 36px;
             place-items: center;
-            border: 1px solid #1ccbad5e;
-            border-radius: 11px;
-            background: #1ccbad18;
-            color: var(--mint);
+            border: 1px solid #784ba55e;
+            border-radius: 6px;
+            background: #784ba518;
+            color: var(--purple);
             font-size: 13px;
             letter-spacing: -0.05em;
         }
@@ -152,8 +149,8 @@
         .floor-panel,
         .slide-panel {
             border: 1px solid var(--border);
-            border-radius: 16px;
-            background: #1a2224e8;
+            border-radius: 6px;
+            background: #ffffff;
             box-shadow: 0 18px 50px #00000020;
         }
 
@@ -164,10 +161,8 @@
             justify-content: center;
             padding: clamp(24px, 5vw, 64px);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            background:
-                radial-gradient(ellipse at 10% 12%, #1ccbad1c, transparent 48%),
-                #1a2224e8;
+            border-radius: 6px;
+            background: #ffffff;
             box-shadow: 0 18px 50px #00000020;
         }
 
@@ -221,22 +216,22 @@
             align-items: center;
             gap: 8px;
             padding: 5px 10px 5px 6px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            background: var(--panel-raised);
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background: #1ccbad;
             cursor: pointer;
             white-space: nowrap;
             transition: background-color 140ms ease, border-color 140ms ease;
         }
 
         .floor-choice:hover {
-            border-color: #1ccbad80;
-            background: #263638;
+            border-color: #159e87;
+            background: #14b99d;
         }
 
         .floor-choice.is-selected {
-            border-color: #1ccbad55;
-            background: #1ccbad13;
+            border-color: #159e87;
+            background: #1ccbad;
         }
 
         .floor-number {
@@ -245,28 +240,29 @@
             height: 34px;
             place-items: center;
             border-radius: 50%;
-            background: var(--panel-raised);
-            color: #c6d0ce;
+            background: #784ba5;
+            color: #ffffff;
             font-size: 11px;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
         }
 
         .is-selected .floor-number {
-            background: var(--mint);
-            color: #09231f;
+            background: #633b8e;
+            color: #ffffff;
         }
 
         .floor-name {
-            color: var(--text);
+            color: #ffffff;
             font-size: 11px;
             font-weight: 700;
             white-space: nowrap;
         }
 
         .floor-room-count {
-            color: var(--muted);
+            color: #ffffff;
             font-size: 10px;
+            font-weight: 700;
             font-variant-numeric: tabular-nums;
         }
 
@@ -286,6 +282,19 @@
             flex-direction: column;
             border: 0;
             border-radius: 0;
+            animation: floor-slide-in 320ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+        }
+
+        @keyframes floor-slide-in {
+            from {
+                opacity: 0.8;
+                transform: translateX(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .slide-panel.is-fullscreen .slide-heading,
@@ -324,6 +333,54 @@
             display: block;
             min-height: 0;
             margin: 0;
+        }
+
+        .is-embedded {
+            min-width: 0;
+        }
+
+        .is-embedded .page-shell {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .is-embedded .topbar,
+        .is-embedded .intro,
+        .is-embedded .floor-chooser {
+            display: none;
+        }
+
+        .is-embedded .workspace {
+            display: block;
+            min-height: 0;
+            margin: 0;
+        }
+
+        .is-embedded .floor-panel {
+            min-height: 100vh;
+            padding: 10px;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .is-embedded .floor-panel-heading {
+            padding: 4px 4px 10px;
+        }
+
+        .is-embedded .floor-list {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 6px;
+        }
+
+        .is-embedded .floor-choice {
+            min-height: 42px;
+        }
+
+        .is-embedded .slide-panel.is-fullscreen {
+            border: 0;
+            border-radius: 0;
         }
 
         .slide-heading {
@@ -390,13 +447,13 @@
         }
 
         .room-filter:hover {
-            border-color: #1ccbad80;
+            border-color: #784ba580;
         }
 
         .room-filter.is-selected {
-            border-color: #1ccbad70;
-            background: #1ccbad18;
-            color: var(--mint);
+            border-color: #784ba570;
+            background: #784ba518;
+            color: var(--purple);
         }
 
         .room-filter-count {
@@ -413,10 +470,10 @@
         .slide-badge {
             flex: 0 0 auto;
             padding: 6px 9px;
-            border: 1px solid #1ccbad45;
-            border-radius: 7px;
-            background: #1ccbad12;
-            color: var(--mint);
+            border: 1px solid #784ba545;
+            border-radius: 6px;
+            background: #784ba512;
+            color: var(--purple);
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 0.06em;
@@ -478,8 +535,8 @@
 
         .room-target:hover,
         .room-target:focus-visible {
-            border-color: #079b83;
-            background: #1ccbad38;
+            border-color: #784ba5;
+            background: #784ba538;
             outline-offset: 1px;
         }
 
@@ -504,6 +561,37 @@
             box-shadow: 0 1px 5px #0008;
             content: "";
             transition: transform 120ms ease, background-color 120ms ease;
+        }
+
+        .study-space-target::after {
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% - 1px);
+            z-index: 3;
+            padding: 7px 11px;
+            transform: translate(-50%, 8px) scale(0.96);
+            border: 2px solid #159e87;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #202326;
+            content: attr(data-room-status);
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.2;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+            transition: opacity 140ms ease, transform 140ms ease;
+        }
+
+        .study-space-target.is-reserved::after {
+            border-color: #784ba5;
+        }
+
+        .study-space-target:hover::after,
+        .study-space-target:focus-visible::after {
+            transform: translate(-50%, 0) scale(1);
+            opacity: 1;
         }
 
         .study-space-target.is-reserved::before {
@@ -557,8 +645,25 @@
         }
 
         .slide-button:hover:not(:disabled) {
-            border-color: #1ccbad80;
-            background: #263638;
+            border-color: #784ba580;
+            background: #e7e2ee;
+        }
+
+        .floor-close-button {
+            flex: 1;
+            min-height: 52px;
+            justify-content: center;
+            padding: 10px 16px;
+            border: 2px solid #159e87;
+            border-radius: 6px;
+            background: #1ccbad;
+            color: #ffffff;
+            font-size: 15px;
+        }
+
+        .floor-close-button:hover:not(:disabled) {
+            border-color: #118c77;
+            background: #14b99d;
         }
 
         .slide-button:disabled {
@@ -569,15 +674,16 @@
         .room-dialog {
             width: min(440px, calc(100% - 32px));
             padding: 0;
-            border: 1px solid #405052;
-            border-radius: 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
             background: var(--panel);
             color: var(--text);
             box-shadow: 0 24px 80px #0009;
+            color-scheme: light;
         }
 
         .room-dialog::backdrop {
-            background: #071011b8;
+            background: #202326b8;
             backdrop-filter: blur(4px);
         }
 
@@ -659,7 +765,7 @@
             width: 100%;
             padding: 10px 11px;
             border: 1px solid var(--border);
-            border-radius: 9px;
+            border-radius: 5px;
             background: var(--panel-raised);
             color: var(--text);
             font: inherit;
@@ -681,22 +787,27 @@
         .dialog-action {
             min-height: 38px;
             padding: 8px 13px;
-            border: 1px solid #1ccbad70;
-            border-radius: 9px;
-            background: #1ccbad18;
-            color: var(--text);
+            border: 1px solid var(--purple);
+            border-radius: 5px;
+            background: var(--purple);
+            color: #ffffff;
             cursor: pointer;
             font-size: 12px;
             font-weight: 700;
         }
 
         .dialog-action:hover {
-            background: #1ccbad30;
+            background: #633b8e;
         }
 
         .dialog-action.secondary {
             border-color: var(--border);
             background: var(--panel-raised);
+            color: var(--text);
+        }
+
+        .dialog-action.secondary:hover {
+            background: #dce0e5;
         }
 
         .dialog-note {
@@ -854,6 +965,7 @@
             *::after {
                 scroll-behavior: auto !important;
                 transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
             }
         }
     </style>
@@ -861,7 +973,7 @@
 <body>
     <div class="page-shell">
         <header class="topbar">
-            <a class="brand" href="plattegrond.html" aria-label="Heidelberglaan 15, verdiepingen">
+            <a class="brand" href="plattegrond.html" aria-label="Heidelberglaan 15, studieruimtes">
                 <span class="brand-mark" aria-hidden="true">HL15</span>
                 <span>Heidelberglaan 15</span>
             </a>
@@ -872,7 +984,7 @@
             <section class="intro" aria-labelledby="page-title">
                 <div>
                     <p class="eyebrow">Gebouwverkenner</p>
-                    <h1 id="page-title">Verdiepingen</h1>
+                    <h1 id="page-title">Studieruimtes HL 15</h1>
                     <p class="intro-copy">Kies rechts een verdieping om de plattegrond te openen. Selecteer een kamernummer voor de ruimtegegevens.</p>
                 </div>
                 <span class="building-code">UTRECHT / HL15</span>
@@ -887,7 +999,7 @@
 
                 <nav class="floor-panel" aria-label="Kies een verdieping">
                     <div class="floor-panel-heading">
-                        <h2>Verdiepingen</h2>
+                        <h2>Studieruimtes HL 15</h2>
                         <span>0 - 7</span>
                     </div>
                     <div class="floor-list" id="floor-list"></div>
@@ -899,7 +1011,7 @@
                             <h2 id="slide-title">Plattegrond</h2>
                             <p id="slide-description">Selecteer een verdieping om de plattegrond te openen</p>
                         </div>
-                        <span class="slide-badge" id="slide-badge">Verdiepingen 0 - 7</span>
+                        <span class="slide-badge" id="slide-badge">Studieruimtes HL 15</span>
                     </header>
 
                     <div class="room-filter-bar" id="room-filter-bar" hidden>
@@ -923,7 +1035,7 @@
                         <button class="slide-button" id="previous-slide" type="button" aria-label="Vorige verdieping">
                             <span aria-hidden="true">&larr;</span> Vorige
                         </button>
-                        <button class="slide-button" id="close-floor-view" type="button">Terug naar verdiepingen</button>
+                        <button class="slide-button floor-close-button" id="close-floor-view" type="button">Terug naar verdiepingen</button>
                         <button class="slide-button" id="next-slide" type="button" aria-label="Volgende verdieping">
                             Volgende <span aria-hidden="true">&rarr;</span>
                         </button>
@@ -959,7 +1071,7 @@
             <div class="dialog-fields">
                 <div class="dialog-field">
                     <label for="dialog-room-title">Titel</label>
-                    <input id="dialog-room-title" type="text" value="Studieruimte" maxlength="100">
+                    <input id="dialog-room-title" type="text" value="Studieruimte....." placeholder="Studieruimte....." maxlength="100">
                 </div>
                 <div class="dialog-field">
                     <label for="dialog-room-description">Beschrijving</label>
@@ -968,16 +1080,17 @@
             </div>
             <div class="dialog-actions">
                 <button class="dialog-action" id="reserve-room" type="button">Reserveer ruimte</button>
-                <button class="dialog-action secondary" id="open-room" type="button">Open ruimte</button>
+                <button class="dialog-action secondary" id="release-room" type="button" hidden>Annuleer reservering</button>
             </div>
             <p class="dialog-note" id="dialog-reservation-status" aria-live="polite"></p>
-            <p class="dialog-note" id="dialog-action-status" aria-live="polite"></p>
         </div>
     </dialog>
 
     <script src="floor-data.js"></script>
     <script>
         const floors = window.FLOOR_DATA.floors.slice();
+        const isEmbedded = new URLSearchParams(window.location.search).get("embed") === "1";
+        document.body.classList.toggle("is-embedded", isEmbedded);
         const workStudyRoomNumbers = new Set([
             "HL15-1.007", "HL15-1.009", "HL15-1.011", "HL15-1.016", "HL15-1.018",
             "HL15-1.028", "HL15-1.036", "HL15-1.059", "HL15-1.076", "HL15-1.082",
@@ -1005,22 +1118,64 @@
         const roomDialog = document.getElementById("room-dialog");
         const dialogRoomTitle = document.getElementById("dialog-room-title");
         const dialogRoomDescription = document.getElementById("dialog-room-description");
-        const reservationStorageKey = "hl15-room-reservations";
         const reservationStatus = document.getElementById("dialog-reservation-status");
-        const actionStatus = document.getElementById("dialog-action-status");
-        let reservations = new Set();
+        const reserveRoomButton = document.getElementById("reserve-room");
+        const releaseRoomButton = document.getElementById("release-room");
+        const defaultRoomTitle = "Studieruimte.....";
+        const reservationEndpoint = "/api/room-reservations";
+        let reservations = new Map();
         const roomDrafts = new Map();
-        let reservationStorageAvailable = true;
+        let reservationServiceAvailable = false;
 
-        try {
-            const savedReservations = JSON.parse(localStorage.getItem(reservationStorageKey) || "[]");
-            if (!Array.isArray(savedReservations) || savedReservations.some((key) => typeof key !== "string")) {
-                throw new Error("Ongeldige reserveringsgegevens");
+        function getCurrentUserId() {
+            const userId = Number(localStorage.getItem("userId"));
+            return Number.isInteger(userId) && userId > 0 ? userId : null;
+        }
+
+        async function refreshReservations() {
+            try {
+                const userId = getCurrentUserId();
+                const query = userId ? `?user_id=${encodeURIComponent(userId)}` : "";
+                const response = await fetch(`${reservationEndpoint}${query}`);
+                if (!response.ok) {
+                    throw new Error(`Reserveringen konden niet worden geladen (${response.status}).`);
+                }
+
+                const data = await response.json();
+                if (!Array.isArray(data) || data.some((reservation) =>
+                    typeof reservation.reservation_key !== "string" ||
+                    typeof reservation.is_mine !== "boolean"
+                )) {
+                    throw new Error("De server stuurde ongeldige reserveringsgegevens.");
+                }
+
+                reservations = new Map(data.map((reservation) => [
+                    reservation.reservation_key,
+                    {
+                        isMine: reservation.is_mine,
+                        title: typeof reservation.title === "string" ? reservation.title : defaultRoomTitle,
+                        description: typeof reservation.description === "string" ? reservation.description : ""
+                    }
+                ]));
+                reservationServiceAvailable = true;
+                roomTargets.querySelectorAll(".room-target").forEach((button) => {
+                    updateRoomTargetReservation(button, button.dataset.reservationKey);
+                });
+                if (roomDialog.open) {
+                    updateReservationStatus(roomDialog.dataset.reservationKey);
+                }
+                return true;
+            } catch (error) {
+                console.error("Reserveringsstatus kon niet worden bijgewerkt.", error);
+                reservationServiceAvailable = false;
+                roomTargets.querySelectorAll(".room-target").forEach((button) => {
+                    updateRoomTargetReservation(button, button.dataset.reservationKey);
+                });
+                if (roomDialog.open) {
+                    updateReservationStatus(roomDialog.dataset.reservationKey);
+                }
+                return false;
             }
-            reservations = new Set(savedReservations);
-        } catch (error) {
-            console.error("Reserveringen konden niet worden geladen.", error);
-            reservationStorageAvailable = false;
         }
 
         const previousButton = document.getElementById("previous-slide");
@@ -1064,7 +1219,7 @@
                 button.style.setProperty("--target-width", `${room.width}%`);
                 button.style.setProperty("--target-height", `${room.height}%`);
                 updateRoomTargetReservation(button, reservationKey);
-                button.addEventListener("click", (event) => {
+                button.addEventListener("click", async (event) => {
                     const bounds = mapStage.getBoundingClientRect();
                     const selectedRoom = event.detail === 0 ? room : rooms.reduce((nearest, candidate) => {
                         const clickX = event.clientX - bounds.left;
@@ -1075,7 +1230,7 @@
                         const candidateY = candidate.y / 100 * bounds.height - clickY;
                         return candidateX ** 2 + candidateY ** 2 < nearestX ** 2 + nearestY ** 2 ? candidate : nearest;
                     }, rooms[0]);
-                    openRoomDialog(
+                    await openRoomDialog(
                         selectedRoom.number,
                         workStudyRoomNumbers.has(selectedRoom.number)
                             ? "Algemene werk- en studieomgeving"
@@ -1095,7 +1250,6 @@
                 const reservationKey = `${floor.level}:study-space-${index + 1}`;
                 button.className = "room-target study-space-target";
                 button.type = "button";
-                button.title = "Algemene studieruimte";
                 button.dataset.reservationKey = reservationKey;
                 button.setAttribute(
                     "aria-label",
@@ -1104,25 +1258,32 @@
                 button.style.left = `${spot.x}%`;
                 button.style.top = `${spot.y}%`;
                 updateRoomTargetReservation(button, reservationKey);
-                button.addEventListener("click", () => {
-                    openRoomDialog("", "Algemene studieruimte", floor, `study-space-${index + 1}`);
+                button.addEventListener("click", async () => {
+                    await openRoomDialog("", "Algemene studieruimte", floor, `study-space-${index + 1}`);
                 });
                 roomTargets.append(button);
             });
         }
 
-        function openRoomDialog(roomNumber, category, floor, targetId) {
+        async function openRoomDialog(roomNumber, category, floor, targetId) {
+            await refreshReservations();
             const key = `${floor.level}:${targetId}`;
-            const draft = roomDrafts.get(key) || { title: "Studieruimte", description: "" };
+            const reservation = reservations.get(key);
+            const draft = roomDrafts.get(key);
             document.getElementById("dialog-title").textContent = "Studieruimte";
             document.getElementById("dialog-room-number").textContent = roomNumber;
             document.getElementById("dialog-room-row").hidden = !roomNumber;
             document.getElementById("dialog-floor").textContent = floor.label;
             document.getElementById("dialog-category").textContent = category;
             document.getElementById("dialog-category-row").hidden = !category;
-            dialogRoomTitle.value = draft.title;
-            dialogRoomDescription.value = draft.description;
-            actionStatus.textContent = "";
+            dialogRoomTitle.value = reservation?.isMine
+                ? reservation.title
+                : reservation
+                    ? reservation.title
+                    : draft?.title || defaultRoomTitle;
+            dialogRoomDescription.value = reservation
+                ? reservation.description
+                : draft?.description || "";
             roomDialog.dataset.reservationKey = key;
             updateReservationStatus(key);
             roomDialog.showModal();
@@ -1139,14 +1300,21 @@
         }
 
         function updateRoomTargetReservation(button, key) {
-            const isReserved = reservations.has(key);
+            const reservation = reservations.get(key);
+            const isReserved = Boolean(reservation);
             button.classList.toggle("is-reserved", isReserved);
-            const description = button.classList.contains("study-space-target")
+            const roomDescription = button.classList.contains("study-space-target")
                 ? `Details van algemene studieruimte, punt ${key.split("study-space-")[1]}`
                 : `Details van kamer ${key.slice(key.indexOf(":") + 1)}`;
+            const status = !reservationServiceAvailable
+                ? "Status niet beschikbaar"
+                : isReserved
+                    ? "Bezet"
+                    : "Beschikbaar";
+            button.dataset.roomStatus = status;
             button.setAttribute(
                 "aria-label",
-                `${description}${isReserved ? ", gereserveerd" : ""}`
+                `${roomDescription}, ${status.toLowerCase()}`
             );
         }
 
@@ -1156,29 +1324,33 @@
                     updateRoomTargetReservation(button, key);
                 }
             });
-            if (!reservationStorageAvailable) {
-                reservationStatus.textContent = "Reserveringen konden niet worden geladen of opgeslagen in deze browser.";
+            const reservation = reservations.get(key);
+            const userId = getCurrentUserId();
+            if (!reservationServiceAvailable) {
+                reserveRoomButton.disabled = true;
+                releaseRoomButton.hidden = true;
+                dialogRoomTitle.disabled = true;
+                dialogRoomDescription.disabled = true;
+                reservationStatus.textContent = "De reserveringsstatus kan niet worden gecontroleerd. Probeer het later opnieuw.";
                 return;
             }
-            const isReserved = reservations.has(key);
-            document.getElementById("reserve-room").textContent = isReserved
-                ? "Annuleer reservering"
-                : "Reserveer ruimte";
-            reservationStatus.textContent = isReserved
-                ? "Deze ruimte is gereserveerd in deze browser."
-                : "Deze ruimte is niet gereserveerd.";
-        }
-
-        function saveReservations() {
-            try {
-                localStorage.setItem(reservationStorageKey, JSON.stringify([...reservations]));
-                return true;
-            } catch (error) {
-                console.error("Reservering kon niet worden opgeslagen.", error);
-                reservationStorageAvailable = false;
-                reservationStatus.textContent = "De reservering kon niet in deze browser worden opgeslagen.";
-                return false;
-            }
+            reserveRoomButton.textContent = reservation?.isMine
+                ? "Wijzigingen opslaan"
+                : reservation
+                    ? "Gereserveerd door andere gebruiker"
+                    : "Reserveer ruimte";
+            reserveRoomButton.disabled = !userId || (Boolean(reservation) && !reservation.isMine);
+            releaseRoomButton.hidden = !reservation?.isMine;
+            releaseRoomButton.disabled = !userId || !reservation?.isMine;
+            dialogRoomTitle.disabled = !userId || (Boolean(reservation) && !reservation.isMine);
+            dialogRoomDescription.disabled = !userId || (Boolean(reservation) && !reservation.isMine);
+            reservationStatus.textContent = !userId
+                ? "Log in om een studieruimte te reserveren."
+                : reservation?.isMine
+                    ? "Deze ruimte is door jou gereserveerd."
+                    : reservation
+                        ? "Deze ruimte is door een andere gebruiker gereserveerd."
+                        : "Deze ruimte is beschikbaar.";
         }
 
         function showRoomFilter(floor) {
@@ -1225,6 +1397,10 @@
             slidePanel.hidden = false;
             slidePanel.classList.add("is-fullscreen");
             document.body.classList.add("is-floor-open");
+            if (isEmbedded) {
+                const parentOrigin = window.location.origin === "null" ? "*" : window.location.origin;
+                window.parent.postMessage({ type: "floor-map-open" }, parentOrigin);
+            }
             roomTargets.replaceChildren();
             roomTargets.hidden = false;
             const hasStudySpots = Boolean(floor.studySpots);
@@ -1244,6 +1420,7 @@
                     "Selecteer een kamernummer voor de ruimtegegevens";
                 showRoomFilter(floor);
             }
+            void refreshReservations();
 
             fitFullscreenMap();
             previousButton.disabled = currentSlide === 0;
@@ -1273,6 +1450,10 @@
             slidePanel.hidden = true;
             mapStage.style.removeProperty("width");
             mapStage.style.removeProperty("height");
+            if (isEmbedded) {
+                const parentOrigin = window.location.origin === "null" ? "*" : window.location.origin;
+                window.parent.postMessage({ type: "floor-map-close" }, parentOrigin);
+            }
         }
 
         floorList.addEventListener("click", (event) => {
@@ -1295,30 +1476,107 @@
         mapImage.addEventListener("load", fitFullscreenMap);
         window.addEventListener("resize", fitFullscreenMap);
         document.getElementById("close-dialog").addEventListener("click", () => roomDialog.close());
-        document.getElementById("reserve-room").addEventListener("click", () => {
+        reserveRoomButton.addEventListener("click", async (event) => {
             const key = roomDialog.dataset.reservationKey;
-            const wasReserved = reservations.has(key);
-            if (reservations.has(key)) {
-                reservations.delete(key);
-            } else {
-                reservations.add(key);
-            }
-            if (saveReservations()) {
+            const userId = getCurrentUserId();
+            const reservation = reservations.get(key);
+            const reserveButton = event.currentTarget;
+            if (!userId || !reservationServiceAvailable) {
                 updateReservationStatus(key);
-            } else if (wasReserved) {
-                reservations.add(key);
-            } else {
+                return;
+            }
+
+            const isUpdating = reservation?.isMine === true;
+            if (reservation && !isUpdating) {
+                updateReservationStatus(key);
+                return;
+            }
+
+            reserveButton.disabled = true;
+            try {
+                const response = await fetch(reservationEndpoint, {
+                    method: isUpdating ? "PUT" : "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        reservation_key: key,
+                        user_id: userId,
+                        title: dialogRoomTitle.value.trim() || defaultRoomTitle,
+                        description: dialogRoomDescription.value.trim()
+                    })
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    if (response.status === 409 || response.status === 403 || response.status === 404) {
+                        await refreshReservations();
+                        reservationStatus.textContent = data.detail || "De reservering is intussen door een andere gebruiker gewijzigd.";
+                        return;
+                    }
+                    throw new Error(data.detail || "De reservering kon niet worden bijgewerkt.");
+                }
+
+                reservations.set(key, {
+                    isMine: true,
+                    title: data.title,
+                    description: data.description
+                });
+                roomDrafts.delete(key);
+                reservationServiceAvailable = true;
+                updateReservationStatus(key);
+                reservationStatus.textContent = isUpdating
+                    ? "Titel en beschrijving zijn opgeslagen."
+                    : "De studieruimte is gereserveerd.";
+            } catch (error) {
+                console.error("Reservering kon niet worden bijgewerkt.", error);
+                reservationStatus.textContent = error.message || "De reservering kon niet worden bijgewerkt.";
+                await refreshReservations();
+            }
+        });
+        releaseRoomButton.addEventListener("click", async () => {
+            const key = roomDialog.dataset.reservationKey;
+            const userId = getCurrentUserId();
+            if (!userId || !reservations.get(key)?.isMine || !reservationServiceAvailable) {
+                updateReservationStatus(key);
+                return;
+            }
+
+            releaseRoomButton.disabled = true;
+            try {
+                const response = await fetch(reservationEndpoint, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ reservation_key: key, user_id: userId })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || "De reservering kon niet worden geannuleerd.");
+                }
+
                 reservations.delete(key);
+                roomDrafts.delete(key);
+                dialogRoomTitle.value = defaultRoomTitle;
+                dialogRoomDescription.value = "";
+                reservationServiceAvailable = true;
+                updateReservationStatus(key);
+                reservationStatus.textContent = "Reservering geannuleerd. Titel en beschrijving zijn leeggemaakt.";
+            } catch (error) {
+                console.error("Reservering kon niet worden geannuleerd.", error);
+                reservationStatus.textContent = error.message || "De reservering kon niet worden geannuleerd.";
+                await refreshReservations();
+            } finally {
+                if (roomDialog.open && roomDialog.dataset.reservationKey === key) {
+                    updateReservationStatus(key);
+                }
             }
         });
         dialogRoomTitle.addEventListener("input", updateRoomDraft);
         dialogRoomDescription.addEventListener("input", updateRoomDraft);
-        document.getElementById("open-room").addEventListener("click", () => {
-            dialogRoomTitle.value = "";
-            dialogRoomDescription.value = "";
-            updateRoomDraft();
-            actionStatus.textContent = "De ruimte is geopend; titel en beschrijving zijn leeggemaakt.";
-        });
+        void refreshReservations();
+        window.setInterval(() => {
+            if (!slidePanel.hidden && !document.hidden) {
+                void refreshReservations();
+            }
+        }, 10000);
         roomDialog.addEventListener("click", (event) => {
             if (event.target === roomDialog) {
                 roomDialog.close();
