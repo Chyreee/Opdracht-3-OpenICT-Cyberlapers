@@ -143,9 +143,10 @@
 
         .workspace {
             display: grid;
-            grid-template-columns: minmax(0, 1fr);
-            align-items: start;
+            grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+            align-items: stretch;
             gap: 20px;
+            min-height: 390px;
         }
 
         .floor-panel,
@@ -154,6 +155,33 @@
             border-radius: 16px;
             background: #1a2224e8;
             box-shadow: 0 18px 50px #00000020;
+        }
+
+        .floor-chooser {
+            display: flex;
+            min-height: 390px;
+            flex-direction: column;
+            justify-content: center;
+            padding: clamp(24px, 5vw, 64px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background:
+                radial-gradient(ellipse at 10% 12%, #1ccbad1c, transparent 48%),
+                #1a2224e8;
+            box-shadow: 0 18px 50px #00000020;
+        }
+
+        .floor-chooser h2 {
+            margin: 0;
+            font-size: clamp(28px, 4vw, 42px);
+            letter-spacing: -0.04em;
+        }
+
+        .floor-chooser p:last-child {
+            max-width: 430px;
+            margin: 12px 0 0;
+            color: var(--muted);
+            font-size: 14px;
         }
 
         .floor-panel {
@@ -180,30 +208,30 @@
         }
 
         .floor-list {
-            display: flex;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
             gap: 8px;
-            overflow-x: auto;
-            padding: 2px 2px 6px;
+            padding: 2px;
             scrollbar-width: thin;
         }
 
         .floor-choice {
-            display: inline-flex;
+            display: flex;
             min-height: 42px;
-            flex: 0 0 auto;
             align-items: center;
             gap: 8px;
-            padding: 5px 12px 5px 6px;
-            border: 1px solid transparent;
-            border-radius: 999px;
-            background: transparent;
+            padding: 5px 10px 5px 6px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--panel-raised);
             cursor: pointer;
             white-space: nowrap;
             transition: background-color 140ms ease, border-color 140ms ease;
         }
 
         .floor-choice:hover {
-            background: #ffffff09;
+            border-color: #1ccbad80;
+            background: #263638;
         }
 
         .floor-choice.is-selected {
@@ -242,22 +270,60 @@
             font-variant-numeric: tabular-nums;
         }
 
-        .overview-choice {
-            border-color: var(--border);
-        }
-
-        .overview-choice .floor-number {
-            color: #d3b6f2;
-        }
-
-        .overview-choice.is-selected .floor-number {
-            background: var(--purple);
-            color: #fff;
-        }
-
         .slide-panel {
             min-width: 0;
             overflow: hidden;
+        }
+
+        .slide-panel.is-fullscreen {
+            position: fixed;
+            z-index: 20;
+            inset: 0;
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            flex-direction: column;
+            border: 0;
+            border-radius: 0;
+        }
+
+        .slide-panel.is-fullscreen .slide-heading,
+        .slide-panel.is-fullscreen .room-filter-bar,
+        .slide-panel.is-fullscreen .slide-controls {
+            flex: 0 0 auto;
+        }
+
+        .slide-panel.is-fullscreen .map-stage {
+            flex: 0 0 auto;
+            margin: auto;
+            background: #fff;
+            background-image: none;
+        }
+
+        .slide-panel.is-fullscreen .map-image {
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+        }
+
+        .is-floor-open .page-shell {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .is-floor-open .topbar,
+        .is-floor-open .intro,
+        .is-floor-open .floor-chooser,
+        .is-floor-open .floor-panel {
+            display: none;
+        }
+
+        .is-floor-open .workspace {
+            display: block;
+            min-height: 0;
+            margin: 0;
         }
 
         .slide-heading {
@@ -291,7 +357,8 @@
         }
 
         .room-filter-bar[hidden],
-        #dialog-category-row[hidden] {
+        #dialog-category-row[hidden],
+        #dialog-room-row[hidden] {
             display: none;
         }
 
@@ -368,21 +435,22 @@
             background-size: 24px 24px;
         }
 
-        .map-stage.is-overview {
-            min-height: 360px;
+        .map-stage::after {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            height: 6.5%;
+            border-top: 5px solid #858182;
+            background: #f3f1f2;
+            content: "";
+            pointer-events: none;
         }
 
         .map-image {
             display: block;
             width: 100%;
             height: auto;
-        }
-
-        .map-stage.is-overview .map-image {
-            width: auto;
-            max-width: 100%;
-            max-height: min(74vh, 930px);
-            object-fit: contain;
         }
 
         .room-targets {
@@ -438,6 +506,10 @@
             transition: transform 120ms ease, background-color 120ms ease;
         }
 
+        .study-space-target.is-reserved::before {
+            background: #8b5cf6;
+        }
+
         .study-space-target:hover,
         .study-space-target:focus-visible {
             border-color: transparent;
@@ -448,6 +520,16 @@
         .study-space-target:focus-visible::before {
             transform: scale(1.2);
             background: #c8141b;
+        }
+
+        .study-space-target.is-reserved:hover::before,
+        .study-space-target.is-reserved:focus-visible::before {
+            background: #a78bfa;
+        }
+
+        .room-target.is-reserved:not(.study-space-target) {
+            border-color: #8b5cf6;
+            background: #8b5cf640;
         }
 
         .slide-controls {
@@ -482,16 +564,6 @@
         .slide-button:disabled {
             cursor: default;
             opacity: 0.45;
-        }
-
-        .slide-position {
-            color: var(--muted);
-            font-size: 11px;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .slide-position strong {
-            color: var(--text);
         }
 
         .room-dialog {
@@ -566,14 +638,69 @@
             font-weight: 700;
         }
 
-        .room-name-blank {
+        .dialog-fields {
+            display: grid;
+            gap: 14px;
+            margin-top: 22px;
+        }
+
+        .dialog-field {
+            display: grid;
+            gap: 6px;
+        }
+
+        .dialog-field label {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .dialog-field input,
+        .dialog-field textarea {
             width: 100%;
-            height: 25px;
-            border-bottom: 1px solid #536162;
+            padding: 10px 11px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: var(--panel-raised);
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+        }
+
+        .dialog-field textarea {
+            min-height: 92px;
+            resize: vertical;
+        }
+
+        .dialog-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-top: 18px;
+        }
+
+        .dialog-action {
+            min-height: 38px;
+            padding: 8px 13px;
+            border: 1px solid #1ccbad70;
+            border-radius: 9px;
+            background: #1ccbad18;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .dialog-action:hover {
+            background: #1ccbad30;
+        }
+
+        .dialog-action.secondary {
+            border-color: var(--border);
+            background: var(--panel-raised);
         }
 
         .dialog-note {
-            margin: 0;
+            margin: 12px 0 0;
             color: var(--muted);
             font-size: 11px;
         }
@@ -601,6 +728,19 @@
 
             .workspace {
                 grid-template-columns: minmax(0, 1fr);
+            }
+
+            .floor-panel {
+                grid-row: 1;
+            }
+
+            .floor-list {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .floor-chooser {
+                min-height: 210px;
+                grid-row: 2;
             }
         }
 
@@ -631,12 +771,6 @@
 
             .floor-panel {
                 padding: 9px;
-            }
-
-            .floor-choice {
-                min-height: 38px;
-                gap: 6px;
-                padding: 4px 9px 4px 4px;
             }
 
             .floor-number {
@@ -687,13 +821,20 @@
                 min-height: 0;
             }
 
-            .map-stage.is-overview {
-                min-height: 230px;
-            }
-
             .slide-controls {
                 min-height: 56px;
                 padding: 8px;
+            }
+
+            .slide-controls {
+                gap: 4px;
+                padding: 8px;
+            }
+
+            .slide-button {
+                gap: 4px;
+                padding: 7px;
+                font-size: 10px;
             }
 
             .slide-button {
@@ -732,32 +873,33 @@
                 <div>
                     <p class="eyebrow">Gebouwverkenner</p>
                     <h1 id="page-title">Verdiepingen</h1>
-                    <p class="intro-copy">Bekijk de gebouwlagen in het overzicht of kies een verdieping. Selecteer een kamernummer op de plattegrond voor de details.</p>
+                    <p class="intro-copy">Kies rechts een verdieping om de plattegrond te openen. Selecteer een kamernummer voor de ruimtegegevens.</p>
                 </div>
                 <span class="building-code">UTRECHT / HL15</span>
             </section>
 
             <div class="workspace">
+                <section class="floor-chooser" aria-labelledby="floor-chooser-title">
+                    <p class="eyebrow">Gebouwverkenner</p>
+                    <h2 id="floor-chooser-title">Kies een verdieping</h2>
+                    <p>Selecteer rechts een verdieping om de plattegrond schermvullend te openen.</p>
+                </section>
+
                 <nav class="floor-panel" aria-label="Kies een verdieping">
                     <div class="floor-panel-heading">
                         <h2>Verdiepingen</h2>
-                        <span>Overzicht en 0 - 7</span>
+                        <span>0 - 7</span>
                     </div>
-                    <div class="floor-list" id="floor-list">
-                        <button class="floor-choice overview-choice is-selected" type="button" data-slide="0" aria-current="true">
-                            <span class="floor-number" aria-hidden="true">ALL</span>
-                            <span class="floor-name">Gebouw-overzicht</span>
-                        </button>
-                    </div>
+                    <div class="floor-list" id="floor-list"></div>
                 </nav>
 
-                <section class="slide-panel" aria-label="Plattegrond slide">
+                <section class="slide-panel" id="slide-panel" aria-label="Plattegrond slide" hidden>
                     <header class="slide-heading">
                         <div>
-                            <h2 id="slide-title">Gebouw-overzicht</h2>
-                            <p id="slide-description">Alle verdiepingen in een overzicht</p>
+                            <h2 id="slide-title">Plattegrond</h2>
+                            <p id="slide-description">Selecteer een verdieping om de plattegrond te openen</p>
                         </div>
-                        <span class="slide-badge" id="slide-badge">8 verdiepingen</span>
+                        <span class="slide-badge" id="slide-badge">Verdiepingen 0 - 7</span>
                     </header>
 
                     <div class="room-filter-bar" id="room-filter-bar" hidden>
@@ -772,8 +914,8 @@
                         </div>
                     </div>
 
-                    <div class="map-stage is-overview" id="map-stage">
-                        <img class="map-image" id="map-image" src="assets/building-overview.png" alt="Exploded overview of the floors at Heidelberglaan 15">
+                    <div class="map-stage" id="map-stage">
+                        <img class="map-image" id="map-image" src="assets/floor-0.png" alt="">
                         <div class="room-targets" id="room-targets" aria-label="Kamers op deze verdieping"></div>
                     </div>
 
@@ -781,7 +923,7 @@
                         <button class="slide-button" id="previous-slide" type="button" aria-label="Vorige verdieping">
                             <span aria-hidden="true">&larr;</span> Vorige
                         </button>
-                        <span class="slide-position" aria-live="polite"><strong id="slide-current">1</strong> / <span id="slide-total">9</span></span>
+                        <button class="slide-button" id="close-floor-view" type="button">Terug naar verdiepingen</button>
                         <button class="slide-button" id="next-slide" type="button" aria-label="Volgende verdieping">
                             Volgende <span aria-hidden="true">&rarr;</span>
                         </button>
@@ -796,25 +938,40 @@
             <div class="dialog-header">
                 <div>
                     <p class="eyebrow">Ruimtegegevens</p>
-                    <h2 id="dialog-title"></h2>
+                    <h2 id="dialog-title">Studieruimte</h2>
                 </div>
                 <button class="close-button" id="close-dialog" type="button" aria-label="Venster sluiten">&times;</button>
             </div>
             <dl class="room-details">
-                <div>
+                <div id="dialog-room-row">
                     <dt>Kamernummer</dt>
                     <dd id="dialog-room-number"></dd>
+                </div>
+                <div>
+                    <dt>Verdieping</dt>
+                    <dd id="dialog-floor"></dd>
                 </div>
                 <div id="dialog-category-row" hidden>
                     <dt>Type ruimte</dt>
                     <dd id="dialog-category">Algemene werk- en studieomgeving</dd>
                 </div>
-                <div>
-                    <dt>Naam van de ruimte</dt>
-                    <dd class="room-name-blank"><span class="visually-hidden">Leeg</span></dd>
-                </div>
             </dl>
-            <p class="dialog-note">De naam van de ruimte is leeg gelaten.</p>
+            <div class="dialog-fields">
+                <div class="dialog-field">
+                    <label for="dialog-room-title">Titel</label>
+                    <input id="dialog-room-title" type="text" value="Studieruimte" maxlength="100">
+                </div>
+                <div class="dialog-field">
+                    <label for="dialog-room-description">Beschrijving</label>
+                    <textarea id="dialog-room-description" maxlength="1000"></textarea>
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button class="dialog-action" id="reserve-room" type="button">Reserveer ruimte</button>
+                <button class="dialog-action secondary" id="open-room" type="button">Open ruimte</button>
+            </div>
+            <p class="dialog-note" id="dialog-reservation-status" aria-live="polite"></p>
+            <p class="dialog-note" id="dialog-action-status" aria-live="polite"></p>
         </div>
     </dialog>
 
@@ -839,17 +996,36 @@
             "HL15-7.019", "HL15-7.024", "HL15-7.026", "HL15-7.027", "HL15-7.035",
             "HL15-7.047"
         ]);
-        const slides = [
-            { kind: "overview" },
-            ...floors.map((floor) => ({ kind: "floor", floor }))
-        ];
+        const slides = floors.map((floor) => ({ floor }));
         const floorList = document.getElementById("floor-list");
+        const slidePanel = document.getElementById("slide-panel");
         const mapStage = document.getElementById("map-stage");
         const mapImage = document.getElementById("map-image");
         const roomTargets = document.getElementById("room-targets");
         const roomDialog = document.getElementById("room-dialog");
+        const dialogRoomTitle = document.getElementById("dialog-room-title");
+        const dialogRoomDescription = document.getElementById("dialog-room-description");
+        const reservationStorageKey = "hl15-room-reservations";
+        const reservationStatus = document.getElementById("dialog-reservation-status");
+        const actionStatus = document.getElementById("dialog-action-status");
+        let reservations = new Set();
+        const roomDrafts = new Map();
+        let reservationStorageAvailable = true;
+
+        try {
+            const savedReservations = JSON.parse(localStorage.getItem(reservationStorageKey) || "[]");
+            if (!Array.isArray(savedReservations) || savedReservations.some((key) => typeof key !== "string")) {
+                throw new Error("Ongeldige reserveringsgegevens");
+            }
+            reservations = new Set(savedReservations);
+        } catch (error) {
+            console.error("Reserveringen konden niet worden geladen.", error);
+            reservationStorageAvailable = false;
+        }
+
         const previousButton = document.getElementById("previous-slide");
         const nextButton = document.getElementById("next-slide");
+        const closeFloorViewButton = document.getElementById("close-floor-view");
         const filterBar = document.getElementById("room-filter-bar");
         const roomFilterButtons = document.querySelectorAll(".room-filter");
         let currentSlide = 0;
@@ -859,7 +1035,7 @@
             const button = document.createElement("button");
             button.className = "floor-choice";
             button.type = "button";
-            button.dataset.slide = String(index + 1);
+            button.dataset.slide = String(index);
             button.setAttribute("aria-label", `${floor.label}, ${floor.rooms.length} kamers`);
             button.innerHTML = `
                 <span class="floor-number" aria-hidden="true">${String(floor.level).padStart(2, "0")}</span>
@@ -874,9 +1050,11 @@
             rooms.forEach((room) => {
                 const isWorkStudyRoom = workStudyRoomNumbers.has(room.number);
                 const button = document.createElement("button");
+                const reservationKey = `${floor.level}:${room.number}`;
                 button.className = "room-target";
                 button.type = "button";
                 button.title = room.number;
+                button.dataset.reservationKey = reservationKey;
                 button.setAttribute(
                     "aria-label",
                     `Details van kamer ${room.number}${isWorkStudyRoom ? ", algemene werk- en studieomgeving" : ""}`
@@ -885,6 +1063,7 @@
                 button.style.top = `${room.y}%`;
                 button.style.setProperty("--target-width", `${room.width}%`);
                 button.style.setProperty("--target-height", `${room.height}%`);
+                updateRoomTargetReservation(button, reservationKey);
                 button.addEventListener("click", (event) => {
                     const bounds = mapStage.getBoundingClientRect();
                     const selectedRoom = event.detail === 0 ? room : rooms.reduce((nearest, candidate) => {
@@ -900,40 +1079,106 @@
                         selectedRoom.number,
                         workStudyRoomNumbers.has(selectedRoom.number)
                             ? "Algemene werk- en studieomgeving"
-                            : ""
+                            : "",
+                        floor,
+                        selectedRoom.number
                     );
                 });
                 roomTargets.append(button);
             });
         }
 
-        function addStudySpaceTargets(spots) {
+        function addStudySpaceTargets(spots, floor) {
             roomTargets.replaceChildren();
             spots.forEach((spot, index) => {
                 const button = document.createElement("button");
+                const reservationKey = `${floor.level}:study-space-${index + 1}`;
                 button.className = "room-target study-space-target";
                 button.type = "button";
                 button.title = "Algemene studieruimte";
+                button.dataset.reservationKey = reservationKey;
                 button.setAttribute(
                     "aria-label",
                     `Details van algemene studieruimte, punt ${index + 1}`
                 );
                 button.style.left = `${spot.x}%`;
                 button.style.top = `${spot.y}%`;
+                updateRoomTargetReservation(button, reservationKey);
                 button.addEventListener("click", () => {
-                    openRoomDialog("", "Algemene studieruimte");
+                    openRoomDialog("", "Algemene studieruimte", floor, `study-space-${index + 1}`);
                 });
                 roomTargets.append(button);
             });
         }
 
-        function openRoomDialog(roomNumber, category) {
-            const title = category || roomNumber;
-            document.getElementById("dialog-title").textContent = title;
+        function openRoomDialog(roomNumber, category, floor, targetId) {
+            const key = `${floor.level}:${targetId}`;
+            const draft = roomDrafts.get(key) || { title: "Studieruimte", description: "" };
+            document.getElementById("dialog-title").textContent = "Studieruimte";
             document.getElementById("dialog-room-number").textContent = roomNumber;
+            document.getElementById("dialog-room-row").hidden = !roomNumber;
+            document.getElementById("dialog-floor").textContent = floor.label;
             document.getElementById("dialog-category").textContent = category;
             document.getElementById("dialog-category-row").hidden = !category;
+            dialogRoomTitle.value = draft.title;
+            dialogRoomDescription.value = draft.description;
+            actionStatus.textContent = "";
+            roomDialog.dataset.reservationKey = key;
+            updateReservationStatus(key);
             roomDialog.showModal();
+        }
+
+        function updateRoomDraft() {
+            const key = roomDialog.dataset.reservationKey;
+            if (key) {
+                roomDrafts.set(key, {
+                    title: dialogRoomTitle.value,
+                    description: dialogRoomDescription.value
+                });
+            }
+        }
+
+        function updateRoomTargetReservation(button, key) {
+            const isReserved = reservations.has(key);
+            button.classList.toggle("is-reserved", isReserved);
+            const description = button.classList.contains("study-space-target")
+                ? `Details van algemene studieruimte, punt ${key.split("study-space-")[1]}`
+                : `Details van kamer ${key.slice(key.indexOf(":") + 1)}`;
+            button.setAttribute(
+                "aria-label",
+                `${description}${isReserved ? ", gereserveerd" : ""}`
+            );
+        }
+
+        function updateReservationStatus(key) {
+            roomTargets.querySelectorAll(".room-target").forEach((button) => {
+                if (button.dataset.reservationKey === key) {
+                    updateRoomTargetReservation(button, key);
+                }
+            });
+            if (!reservationStorageAvailable) {
+                reservationStatus.textContent = "Reserveringen konden niet worden geladen of opgeslagen in deze browser.";
+                return;
+            }
+            const isReserved = reservations.has(key);
+            document.getElementById("reserve-room").textContent = isReserved
+                ? "Annuleer reservering"
+                : "Reserveer ruimte";
+            reservationStatus.textContent = isReserved
+                ? "Deze ruimte is gereserveerd in deze browser."
+                : "Deze ruimte is niet gereserveerd.";
+        }
+
+        function saveReservations() {
+            try {
+                localStorage.setItem(reservationStorageKey, JSON.stringify([...reservations]));
+                return true;
+            } catch (error) {
+                console.error("Reservering kon niet worden opgeslagen.", error);
+                reservationStorageAvailable = false;
+                reservationStatus.textContent = "De reservering kon niet in deze browser worden opgeslagen.";
+                return false;
+            }
         }
 
         function showRoomFilter(floor) {
@@ -962,10 +1207,10 @@
         }
 
         function showSlide(index) {
-            currentSlide = (index + slides.length) % slides.length;
+            currentSlide = Math.max(0, Math.min(index, slides.length - 1));
             const slide = slides[currentSlide];
-            const overview = slide.kind === "overview";
             const choices = document.querySelectorAll(".floor-choice");
+            const floor = slide.floor;
 
             choices.forEach((choice) => {
                 const selected = Number(choice.dataset.slide) === currentSlide;
@@ -977,39 +1222,57 @@
                 }
             });
 
-            mapStage.classList.toggle("is-overview", overview);
+            slidePanel.hidden = false;
+            slidePanel.classList.add("is-fullscreen");
+            document.body.classList.add("is-floor-open");
             roomTargets.replaceChildren();
-            roomTargets.hidden = overview;
-            const hasStudySpots = !overview && Boolean(slide.floor.studySpots);
-            filterBar.hidden = overview || hasStudySpots;
+            roomTargets.hidden = false;
+            const hasStudySpots = Boolean(floor.studySpots);
+            filterBar.hidden = hasStudySpots;
             currentRoomFilter = "all";
-            if (overview) {
-                mapImage.src = window.FLOOR_DATA.overview;
-                mapImage.alt = "Exploded overview showing the stacked floors of Heidelberglaan 15";
-                document.getElementById("slide-title").textContent = "Gebouw-overzicht";
-                document.getElementById("slide-description").textContent = "Alle verdiepingen in een overzicht";
-                document.getElementById("slide-badge").textContent = `${floors.length} verdiepingen`;
+            mapImage.src = floor.image;
+            mapImage.alt = `Plattegrond van de ${floor.label} van Heidelberglaan 15`;
+            document.getElementById("slide-title").textContent = floor.label;
+            if (hasStudySpots) {
+                document.getElementById("slide-description").textContent =
+                    "Selecteer een rode knop voor de gegevens van een algemene studieruimte";
+                document.getElementById("slide-badge").textContent =
+                    `${floor.studySpots.length} algemene studieruimtes`;
+                addStudySpaceTargets(floor.studySpots, floor);
             } else {
-                const floor = slide.floor;
-                mapImage.src = floor.image;
-                mapImage.alt = `Plattegrond van de ${floor.label} van Heidelberglaan 15`;
-                document.getElementById("slide-title").textContent = floor.label;
-                if (hasStudySpots) {
-                    document.getElementById("slide-description").textContent =
-                        "Selecteer een rode knop voor de gegevens van een algemene studieruimte";
-                    document.getElementById("slide-badge").textContent =
-                        `${floor.studySpots.length} algemene studieruimtes`;
-                    addStudySpaceTargets(floor.studySpots);
-                } else {
-                    document.getElementById("slide-description").textContent =
-                        "Selecteer een kamernummer voor de ruimtegegevens";
-                    showRoomFilter(floor);
-                }
+                document.getElementById("slide-description").textContent =
+                    "Selecteer een kamernummer voor de ruimtegegevens";
+                showRoomFilter(floor);
             }
 
-            document.getElementById("slide-current").textContent = String(currentSlide + 1);
+            fitFullscreenMap();
             previousButton.disabled = currentSlide === 0;
             nextButton.disabled = currentSlide === slides.length - 1;
+        }
+
+        function fitFullscreenMap() {
+            if (slidePanel.hidden || !mapImage.naturalWidth || !mapImage.naturalHeight) {
+                return;
+            }
+            const headerHeight = slidePanel.querySelector(".slide-heading").offsetHeight;
+            const filterHeight = filterBar.hidden ? 0 : filterBar.offsetHeight;
+            const controlsHeight = slidePanel.querySelector(".slide-controls").offsetHeight;
+            const availableHeight = Math.max(
+                100,
+                window.innerHeight - headerHeight - filterHeight - controlsHeight
+            );
+            const aspectRatio = mapImage.naturalWidth / mapImage.naturalHeight;
+            const width = Math.min(window.innerWidth, availableHeight * aspectRatio);
+            mapStage.style.width = `${width}px`;
+            mapStage.style.height = `${width / aspectRatio}px`;
+        }
+
+        function closeFloorView() {
+            document.body.classList.remove("is-floor-open");
+            slidePanel.classList.remove("is-fullscreen");
+            slidePanel.hidden = true;
+            mapStage.style.removeProperty("width");
+            mapStage.style.removeProperty("height");
         }
 
         floorList.addEventListener("click", (event) => {
@@ -1021,18 +1284,41 @@
 
         roomFilterButtons.forEach((button) => {
             button.addEventListener("click", () => {
-                const slide = slides[currentSlide];
-                if (slide.kind !== "floor") {
-                    return;
-                }
                 currentRoomFilter = button.dataset.roomFilter;
-                showRoomFilter(slide.floor);
+                showRoomFilter(slides[currentSlide].floor);
             });
         });
 
         previousButton.addEventListener("click", () => showSlide(currentSlide - 1));
         nextButton.addEventListener("click", () => showSlide(currentSlide + 1));
+        closeFloorViewButton.addEventListener("click", closeFloorView);
+        mapImage.addEventListener("load", fitFullscreenMap);
+        window.addEventListener("resize", fitFullscreenMap);
         document.getElementById("close-dialog").addEventListener("click", () => roomDialog.close());
+        document.getElementById("reserve-room").addEventListener("click", () => {
+            const key = roomDialog.dataset.reservationKey;
+            const wasReserved = reservations.has(key);
+            if (reservations.has(key)) {
+                reservations.delete(key);
+            } else {
+                reservations.add(key);
+            }
+            if (saveReservations()) {
+                updateReservationStatus(key);
+            } else if (wasReserved) {
+                reservations.add(key);
+            } else {
+                reservations.delete(key);
+            }
+        });
+        dialogRoomTitle.addEventListener("input", updateRoomDraft);
+        dialogRoomDescription.addEventListener("input", updateRoomDraft);
+        document.getElementById("open-room").addEventListener("click", () => {
+            dialogRoomTitle.value = "";
+            dialogRoomDescription.value = "";
+            updateRoomDraft();
+            actionStatus.textContent = "De ruimte is geopend; titel en beschrijving zijn leeggemaakt.";
+        });
         roomDialog.addEventListener("click", (event) => {
             if (event.target === roomDialog) {
                 roomDialog.close();
@@ -1045,7 +1331,14 @@
                 }
                 return;
             }
+            if (event.key === "Escape" && document.body.classList.contains("is-floor-open")) {
+                closeFloorView();
+                return;
+            }
             if (event.target instanceof HTMLElement && event.target.matches("button")) {
+                return;
+            }
+            if (!document.body.classList.contains("is-floor-open")) {
                 return;
             }
             if (event.key === "ArrowRight") {
@@ -1054,8 +1347,6 @@
                 showSlide(currentSlide - 1);
             }
         });
-
-        showSlide(0);
     </script>
 </body>
 </html>
