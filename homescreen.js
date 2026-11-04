@@ -1,5 +1,23 @@
 
 const searchInput = document.getElementById("searchInput");
+const floorMapFrame = document.getElementById("floorMapFrame");
+
+window.addEventListener("message", event => {
+    if (event.source !== floorMapFrame.contentWindow) {
+        return;
+    }
+
+    const isLocalFileMessage = window.location.protocol === "file:" && event.origin === "null";
+    if (event.origin !== window.location.origin && !isLocalFileMessage) {
+        return;
+    }
+
+    if (event.data?.type === "floor-map-open") {
+        floorMapFrame.classList.add("is-expanded");
+    } else if (event.data?.type === "floor-map-close") {
+        floorMapFrame.classList.remove("is-expanded");
+    }
+});
 
 let allQuestions = [];
 

@@ -14,10 +14,15 @@ FILES=(
     profile.html
     profile.js
     style.css
+    plattegrond.html
+    floor-data.js
 )
 
 for FILE in "${FILES[@]}"; do
     sudo cp "$SOURCE/$FILE" "$DEST/$FILE"
 done
+
+sudo mkdir -p "$DEST/assets"
+sudo cp "$SOURCE"/assets/* "$DEST/assets/"
 
 echo "Website deployed successfully!"
