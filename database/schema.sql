@@ -24,3 +24,11 @@ CREATE TABLE votes (
     UNIQUE (user_vote, question_id),
     CHECK (vote_type IN ('up', 'down'))
 );
+
+CREATE TABLE room_reservations (
+    reservation_key VARCHAR(100) PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(100) NOT NULL DEFAULT 'Studieruimte.....',
+    description TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
