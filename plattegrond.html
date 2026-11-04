@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111719">
+    <title>Heidelberglaan 15 | Verdiepingen</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            color-scheme: dark;
+            --background: #111719;
+            --panel: #1a2224;
+            --panel-raised: #222c2e;
+            --border: #344143;
+            --text: #f2f6f5;
+            --muted: #9caaa8;
+            --mint: #1ccbad;
+            --purple: #784ba5;
+        }
+
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            background:
+                radial-gradient(ellipse at 68% -18%, #784ba52b, transparent 44%),
+                var(--background);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+        }
+
+        button {
+            color: inherit;
+            font: inherit;
+        }
+
+        button:focus-visible {
+            outline: 3px solid var(--mint);
+            outline-offset: 3px;
+        }
+
+        .page-shell {
+            width: min(1440px, calc(100% - 56px));
+            margin: 0 auto;
+            padding: 24px 0 40px;
+        }
+
+        .topbar {
+            display: flex;
+            min-height: 50px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border: 1px solid #1ccbad5e;
+            border-radius: 11px;
+            background: #1ccbad18;
+            color: var(--mint);
+            font-size: 13px;
+            letter-spacing: -0.05em;
+        }
+
+        .source-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .source-label::before {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--mint);
+            content: "";
+        }
+
+        .intro {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            margin: 34px 0 25px;
+        }
+
+        .eyebrow {
+            margin: 0 0 8px;
+            color: var(--mint);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(30px, 4vw, 43px);
+            letter-spacing: -0.045em;
+            line-height: 1.08;
+        }
+
+        .intro-copy {
+            max-width: 580px;
+            margin: 11px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .building-code {
+            flex: 0 0 auto;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+            align-items: stretch;
+            gap: 20px;
+            min-height: 390px;
+        }
+
+        .floor-panel,
+        .slide-panel {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: #1a2224e8;
+            box-shadow: 0 18px 50px #00000020;
+        }
+
+        .floor-chooser {
+            display: flex;
+            min-height: 390px;
+            flex-direction: column;
+            justify-content: center;
+            padding: clamp(24px, 5vw, 64px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background:
+                radial-gradient(ellipse at 10% 12%, #1ccbad1c, transparent 48%),
+                #1a2224e8;
+            box-shadow: 0 18px 50px #00000020;
+        }
+
+        .floor-chooser h2 {
+            margin: 0;
+            font-size: clamp(28px, 4vw, 42px);
+            letter-spacing: -0.04em;
+        }
+
+        .floor-chooser p:last-child {
+            max-width: 430px;
+            margin: 12px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .floor-panel {
+            min-width: 0;
+            padding: 12px;
+        }
+
+        .floor-panel-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 2px 6px 10px;
+        }
+
+        .floor-panel-heading h2 {
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .floor-panel-heading span {
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .floor-list {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 8px;
+            padding: 2px;
+            scrollbar-width: thin;
+        }
+
+        .floor-choice {
+            display: flex;
+            min-height: 42px;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px 5px 6px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--panel-raised);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 140ms ease, border-color 140ms ease;
+        }
+
+        .floor-choice:hover {
+            border-color: #1ccbad80;
+            background: #263638;
+        }
+
+        .floor-choice.is-selected {
+            border-color: #1ccbad55;
+            background: #1ccbad13;
+        }
+
+        .floor-number {
+            display: grid;
+            width: 34px;
+            height: 34px;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--panel-raised);
+            color: #c6d0ce;
+            font-size: 11px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .is-selected .floor-number {
+            background: var(--mint);
+            color: #09231f;
+        }
+
+        .floor-name {
+            color: var(--text);
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .floor-room-count {
+            color: var(--muted);
+            font-size: 10px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .slide-panel {
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .slide-panel.is-fullscreen {
+            position: fixed;
+            z-index: 20;
+            inset: 0;
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            flex-direction: column;
+            border: 0;
+            border-radius: 0;
+        }
+
+        .slide-panel.is-fullscreen .slide-heading,
+        .slide-panel.is-fullscreen .room-filter-bar,
+        .slide-panel.is-fullscreen .slide-controls {
+            flex: 0 0 auto;
+        }
+
+        .slide-panel.is-fullscreen .map-stage {
+            flex: 0 0 auto;
+            margin: auto;
+            background: #fff;
+            background-image: none;
+        }
+
+        .slide-panel.is-fullscreen .map-image {
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+        }
+
+        .is-floor-open .page-shell {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .is-floor-open .topbar,
+        .is-floor-open .intro,
+        .is-floor-open .floor-chooser,
+        .is-floor-open .floor-panel {
+            display: none;
+        }
+
+        .is-floor-open .workspace {
+            display: block;
+            min-height: 0;
+            margin: 0;
+        }
+
+        .slide-heading {
+            display: flex;
+            min-height: 73px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 14px 19px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .slide-heading h2 {
+            margin: 0;
+            font-size: 16px;
+            letter-spacing: -0.015em;
+        }
+
+        .slide-heading p {
+            margin: 3px 0 0;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .room-filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .room-filter-bar[hidden],
+        #dialog-category-row[hidden],
+        #dialog-room-row[hidden] {
+            display: none;
+        }
+
+        .room-filter-label {
+            flex: 0 0 auto;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .room-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .room-filter {
+            display: inline-flex;
+            min-height: 34px;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 12px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: var(--panel-raised);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            transition: background-color 140ms ease, border-color 140ms ease;
+        }
+
+        .room-filter:hover {
+            border-color: #1ccbad80;
+        }
+
+        .room-filter.is-selected {
+            border-color: #1ccbad70;
+            background: #1ccbad18;
+            color: var(--mint);
+        }
+
+        .room-filter-count {
+            color: var(--muted);
+            font-size: 10px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .room-filter:disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+        }
+
+        .slide-badge {
+            flex: 0 0 auto;
+            padding: 6px 9px;
+            border: 1px solid #1ccbad45;
+            border-radius: 7px;
+            background: #1ccbad12;
+            color: var(--mint);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .map-stage {
+            position: relative;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            background-color: #f7f8f6;
+            background-image:
+                linear-gradient(#1b2b2b08 1px, transparent 1px),
+                linear-gradient(90deg, #1b2b2b08 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .map-stage::after {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            height: 6.5%;
+            border-top: 5px solid #858182;
+            background: #f3f1f2;
+            content: "";
+            pointer-events: none;
+        }
+
+        .map-image {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .room-targets {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .room-target {
+            position: absolute;
+            display: block;
+            width: max(28px, var(--target-width));
+            height: max(26px, var(--target-height));
+            min-width: 28px;
+            min-height: 26px;
+            padding: 0;
+            transform: translate(-50%, -50%);
+            border: 1px solid transparent;
+            border-radius: 9px;
+            background: transparent;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: background-color 120ms ease, border-color 120ms ease;
+        }
+
+        .room-target:hover,
+        .room-target:focus-visible {
+            border-color: #079b83;
+            background: #1ccbad38;
+            outline-offset: 1px;
+        }
+
+        .study-space-target {
+            display: grid;
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            min-height: 30px;
+            place-items: center;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+        }
+
+        .study-space-target::before {
+            width: 10px;
+            height: 10px;
+            border: 1px solid #ffffff;
+            border-radius: 50%;
+            background: #ed1c24;
+            box-shadow: 0 1px 5px #0008;
+            content: "";
+            transition: transform 120ms ease, background-color 120ms ease;
+        }
+
+        .study-space-target.is-reserved::before {
+            background: #8b5cf6;
+        }
+
+        .study-space-target:hover,
+        .study-space-target:focus-visible {
+            border-color: transparent;
+            background: transparent;
+        }
+
+        .study-space-target:hover::before,
+        .study-space-target:focus-visible::before {
+            transform: scale(1.2);
+            background: #c8141b;
+        }
+
+        .study-space-target.is-reserved:hover::before,
+        .study-space-target.is-reserved:focus-visible::before {
+            background: #a78bfa;
+        }
+
+        .room-target.is-reserved:not(.study-space-target) {
+            border-color: #8b5cf6;
+            background: #8b5cf640;
+        }
+
+        .slide-controls {
+            display: flex;
+            min-height: 62px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .slide-button {
+            display: inline-flex;
+            min-height: 36px;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 10px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: var(--panel-raised);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .slide-button:hover:not(:disabled) {
+            border-color: #1ccbad80;
+            background: #263638;
+        }
+
+        .slide-button:disabled {
+            cursor: default;
+            opacity: 0.45;
+        }
+
+        .room-dialog {
+            width: min(440px, calc(100% - 32px));
+            padding: 0;
+            border: 1px solid #405052;
+            border-radius: 16px;
+            background: var(--panel);
+            color: var(--text);
+            box-shadow: 0 24px 80px #0009;
+        }
+
+        .room-dialog::backdrop {
+            background: #071011b8;
+            backdrop-filter: blur(4px);
+        }
+
+        .dialog-content {
+            padding: 23px;
+        }
+
+        .dialog-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .dialog-header h2 {
+            margin: 0;
+            font-size: 25px;
+            letter-spacing: -0.035em;
+        }
+
+        .close-button {
+            display: grid;
+            width: 34px;
+            height: 34px;
+            flex: 0 0 auto;
+            place-items: center;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            background: var(--panel-raised);
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 19px;
+        }
+
+        .close-button:hover {
+            color: var(--text);
+        }
+
+        .room-details {
+            display: grid;
+            gap: 16px;
+            margin: 24px 0 18px;
+        }
+
+        .room-details div {
+            display: grid;
+            gap: 4px;
+        }
+
+        .room-details dt {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .room-details dd {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .dialog-fields {
+            display: grid;
+            gap: 14px;
+            margin-top: 22px;
+        }
+
+        .dialog-field {
+            display: grid;
+            gap: 6px;
+        }
+
+        .dialog-field label {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .dialog-field input,
+        .dialog-field textarea {
+            width: 100%;
+            padding: 10px 11px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: var(--panel-raised);
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+        }
+
+        .dialog-field textarea {
+            min-height: 92px;
+            resize: vertical;
+        }
+
+        .dialog-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-top: 18px;
+        }
+
+        .dialog-action {
+            min-height: 38px;
+            padding: 8px 13px;
+            border: 1px solid #1ccbad70;
+            border-radius: 9px;
+            background: #1ccbad18;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .dialog-action:hover {
+            background: #1ccbad30;
+        }
+
+        .dialog-action.secondary {
+            border-color: var(--border);
+            background: var(--panel-raised);
+        }
+
+        .dialog-note {
+            margin: 12px 0 0;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            clip-path: inset(50%);
+        }
+
+        @media (max-width: 1200px) {
+            .floor-room-count {
+                display: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .page-shell {
+                width: min(100% - 32px, 760px);
+            }
+
+            .workspace {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .floor-panel {
+                grid-row: 1;
+            }
+
+            .floor-list {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .floor-chooser {
+                min-height: 210px;
+                grid-row: 2;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .page-shell {
+                width: calc(100% - 24px);
+                padding-top: 12px;
+            }
+
+            .topbar {
+                min-height: 45px;
+            }
+
+            .intro {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 14px;
+                margin: 24px 0 18px;
+            }
+
+            .intro-copy {
+                font-size: 12px;
+            }
+
+            .building-code {
+                padding: 7px 10px;
+            }
+
+            .floor-panel {
+                padding: 9px;
+            }
+
+            .floor-number {
+                width: 28px;
+                height: 28px;
+                font-size: 10px;
+            }
+
+            .floor-name {
+                font-size: 10px;
+            }
+
+            .slide-heading {
+                min-height: 65px;
+                gap: 8px;
+                padding: 11px 12px;
+            }
+
+            .slide-heading h2 {
+                font-size: 14px;
+            }
+
+            .room-filter-bar {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 7px;
+                padding: 9px 12px;
+            }
+
+            .room-filters {
+                flex-wrap: nowrap;
+                max-width: 100%;
+                overflow-x: auto;
+                padding-bottom: 3px;
+            }
+
+            .room-filter {
+                flex: 0 0 auto;
+                font-size: 10px;
+            }
+
+            .slide-badge {
+                padding: 5px 6px;
+                font-size: 9px;
+            }
+
+            .map-stage {
+                min-height: 0;
+            }
+
+            .slide-controls {
+                min-height: 56px;
+                padding: 8px;
+            }
+
+            .slide-controls {
+                gap: 4px;
+                padding: 8px;
+            }
+
+            .slide-button {
+                gap: 4px;
+                padding: 7px;
+                font-size: 10px;
+            }
+
+            .slide-button {
+                min-height: 34px;
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+
+            .source-label {
+                font-size: 10px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="topbar">
+            <a class="brand" href="plattegrond.html" aria-label="Heidelberglaan 15, verdiepingen">
+                <span class="brand-mark" aria-hidden="true">HL15</span>
+                <span>Heidelberglaan 15</span>
+            </a>
+            <span class="source-label">Plattegronden HU</span>
+        </header>
+
+        <main>
+            <section class="intro" aria-labelledby="page-title">
+                <div>
+                    <p class="eyebrow">Gebouwverkenner</p>
+                    <h1 id="page-title">Verdiepingen</h1>
+                    <p class="intro-copy">Kies rechts een verdieping om de plattegrond te openen. Selecteer een kamernummer voor de ruimtegegevens.</p>
+                </div>
+                <span class="building-code">UTRECHT / HL15</span>
+            </section>
+
+            <div class="workspace">
+                <section class="floor-chooser" aria-labelledby="floor-chooser-title">
+                    <p class="eyebrow">Gebouwverkenner</p>
+                    <h2 id="floor-chooser-title">Kies een verdieping</h2>
+                    <p>Selecteer rechts een verdieping om de plattegrond schermvullend te openen.</p>
+                </section>
+
+                <nav class="floor-panel" aria-label="Kies een verdieping">
+                    <div class="floor-panel-heading">
+                        <h2>Verdiepingen</h2>
+                        <span>0 - 7</span>
+                    </div>
+                    <div class="floor-list" id="floor-list"></div>
+                </nav>
+
+                <section class="slide-panel" id="slide-panel" aria-label="Plattegrond slide" hidden>
+                    <header class="slide-heading">
+                        <div>
+                            <h2 id="slide-title">Plattegrond</h2>
+                            <p id="slide-description">Selecteer een verdieping om de plattegrond te openen</p>
+                        </div>
+                        <span class="slide-badge" id="slide-badge">Verdiepingen 0 - 7</span>
+                    </header>
+
+                    <div class="room-filter-bar" id="room-filter-bar" hidden>
+                        <span class="room-filter-label">Toon kamers:</span>
+                        <div class="room-filters" role="group" aria-label="Filter kamers op type">
+                            <button class="room-filter is-selected" type="button" data-room-filter="all" aria-pressed="true">
+                                Alle kamers <span class="room-filter-count" id="all-room-count"></span>
+                            </button>
+                            <button class="room-filter" type="button" data-room-filter="work-study" aria-pressed="false">
+                                Algemene werk- en studieomgeving <span class="room-filter-count" id="work-study-count"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="map-stage" id="map-stage">
+                        <img class="map-image" id="map-image" src="assets/floor-0.png" alt="">
+                        <div class="room-targets" id="room-targets" aria-label="Kamers op deze verdieping"></div>
+                    </div>
+
+                    <footer class="slide-controls">
+                        <button class="slide-button" id="previous-slide" type="button" aria-label="Vorige verdieping">
+                            <span aria-hidden="true">&larr;</span> Vorige
+                        </button>
+                        <button class="slide-button" id="close-floor-view" type="button">Terug naar verdiepingen</button>
+                        <button class="slide-button" id="next-slide" type="button" aria-label="Volgende verdieping">
+                            Volgende <span aria-hidden="true">&rarr;</span>
+                        </button>
+                    </footer>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <dialog class="room-dialog" id="room-dialog" aria-labelledby="dialog-title">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <div>
+                    <p class="eyebrow">Ruimtegegevens</p>
+                    <h2 id="dialog-title">Studieruimte</h2>
+                </div>
+                <button class="close-button" id="close-dialog" type="button" aria-label="Venster sluiten">&times;</button>
+            </div>
+            <dl class="room-details">
+                <div id="dialog-room-row">
+                    <dt>Kamernummer</dt>
+                    <dd id="dialog-room-number"></dd>
+                </div>
+                <div>
+                    <dt>Verdieping</dt>
+                    <dd id="dialog-floor"></dd>
+                </div>
+                <div id="dialog-category-row" hidden>
+                    <dt>Type ruimte</dt>
+                    <dd id="dialog-category">Algemene werk- en studieomgeving</dd>
+                </div>
+            </dl>
+            <div class="dialog-fields">
+                <div class="dialog-field">
+                    <label for="dialog-room-title">Titel</label>
+                    <input id="dialog-room-title" type="text" value="Studieruimte" maxlength="100">
+                </div>
+                <div class="dialog-field">
+                    <label for="dialog-room-description">Beschrijving</label>
+                    <textarea id="dialog-room-description" maxlength="1000"></textarea>
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button class="dialog-action" id="reserve-room" type="button">Reserveer ruimte</button>
+                <button class="dialog-action secondary" id="open-room" type="button">Open ruimte</button>
+            </div>
+            <p class="dialog-note" id="dialog-reservation-status" aria-live="polite"></p>
+            <p class="dialog-note" id="dialog-action-status" aria-live="polite"></p>
+        </div>
+    </dialog>
+
+    <script src="floor-data.js"></script>
+    <script>
+        const floors = window.FLOOR_DATA.floors.slice();
+        const workStudyRoomNumbers = new Set([
+            "HL15-1.007", "HL15-1.009", "HL15-1.011", "HL15-1.016", "HL15-1.018",
+            "HL15-1.028", "HL15-1.036", "HL15-1.059", "HL15-1.076", "HL15-1.082",
+            "HL15-1.084", "HL15-1.093", "HL15-1.094", "HL15-1.095", "HL15-1.097",
+            "HL15-1.098", "HL15-1.099", "HL15-1.101", "HL15-1.102",
+            "HL15-2.007", "HL15-2.009", "HL15-2.016", "HL15-2.024", "HL15-2.026",
+            "HL15-2.033", "HL15-2.045", "HL15-2.047", "HL15-2.090", "HL15-2.092",
+            "HL15-2.138",
+            "HL15-3.047", "HL15-3.064", "HL15-3.067", "HL15-3.069",
+            "HL15-4.026", "HL15-4.028", "HL15-4.030", "HL15-4.037", "HL15-4.043",
+            "HL15-4.092", "HL15-4.118",
+            "HL15-5.022", "HL15-5.033", "HL15-5.064", "HL15-5.066", "HL15-5.069",
+            "HL15-5.071", "HL15-5.087", "HL15-5.090", "HL15-5.092",
+            "HL15-6.012", "HL15-6.025", "HL15-6.031", "HL15-6.032", "HL15-6.034",
+            "HL15-6.061",
+            "HL15-7.019", "HL15-7.024", "HL15-7.026", "HL15-7.027", "HL15-7.035",
+            "HL15-7.047"
+        ]);
+        const slides = floors.map((floor) => ({ floor }));
+        const floorList = document.getElementById("floor-list");
+        const slidePanel = document.getElementById("slide-panel");
+        const mapStage = document.getElementById("map-stage");
+        const mapImage = document.getElementById("map-image");
+        const roomTargets = document.getElementById("room-targets");
+        const roomDialog = document.getElementById("room-dialog");
+        const dialogRoomTitle = document.getElementById("dialog-room-title");
+        const dialogRoomDescription = document.getElementById("dialog-room-description");
+        const reservationStorageKey = "hl15-room-reservations";
+        const reservationStatus = document.getElementById("dialog-reservation-status");
+        const actionStatus = document.getElementById("dialog-action-status");
+        let reservations = new Set();
+        const roomDrafts = new Map();
+        let reservationStorageAvailable = true;
+
+        try {
+            const savedReservations = JSON.parse(localStorage.getItem(reservationStorageKey) || "[]");
+            if (!Array.isArray(savedReservations) || savedReservations.some((key) => typeof key !== "string")) {
+                throw new Error("Ongeldige reserveringsgegevens");
+            }
+            reservations = new Set(savedReservations);
+        } catch (error) {
+            console.error("Reserveringen konden niet worden geladen.", error);
+            reservationStorageAvailable = false;
+        }
+
+        const previousButton = document.getElementById("previous-slide");
+        const nextButton = document.getElementById("next-slide");
+        const closeFloorViewButton = document.getElementById("close-floor-view");
+        const filterBar = document.getElementById("room-filter-bar");
+        const roomFilterButtons = document.querySelectorAll(".room-filter");
+        let currentSlide = 0;
+        let currentRoomFilter = "all";
+
+        floors.forEach((floor, index) => {
+            const button = document.createElement("button");
+            button.className = "floor-choice";
+            button.type = "button";
+            button.dataset.slide = String(index);
+            button.setAttribute("aria-label", `${floor.label}, ${floor.rooms.length} kamers`);
+            button.innerHTML = `
+                <span class="floor-number" aria-hidden="true">${String(floor.level).padStart(2, "0")}</span>
+                <span class="floor-name">${floor.label}</span>
+                <span class="floor-room-count">${floor.rooms.length}</span>
+            `;
+            floorList.append(button);
+        });
+
+        function addRoomTargets(floor, rooms) {
+            roomTargets.replaceChildren();
+            rooms.forEach((room) => {
+                const isWorkStudyRoom = workStudyRoomNumbers.has(room.number);
+                const button = document.createElement("button");
+                const reservationKey = `${floor.level}:${room.number}`;
+                button.className = "room-target";
+                button.type = "button";
+                button.title = room.number;
+                button.dataset.reservationKey = reservationKey;
+                button.setAttribute(
+                    "aria-label",
+                    `Details van kamer ${room.number}${isWorkStudyRoom ? ", algemene werk- en studieomgeving" : ""}`
+                );
+                button.style.left = `${room.x}%`;
+                button.style.top = `${room.y}%`;
+                button.style.setProperty("--target-width", `${room.width}%`);
+                button.style.setProperty("--target-height", `${room.height}%`);
+                updateRoomTargetReservation(button, reservationKey);
+                button.addEventListener("click", (event) => {
+                    const bounds = mapStage.getBoundingClientRect();
+                    const selectedRoom = event.detail === 0 ? room : rooms.reduce((nearest, candidate) => {
+                        const clickX = event.clientX - bounds.left;
+                        const clickY = event.clientY - bounds.top;
+                        const nearestX = nearest.x / 100 * bounds.width - clickX;
+                        const nearestY = nearest.y / 100 * bounds.height - clickY;
+                        const candidateX = candidate.x / 100 * bounds.width - clickX;
+                        const candidateY = candidate.y / 100 * bounds.height - clickY;
+                        return candidateX ** 2 + candidateY ** 2 < nearestX ** 2 + nearestY ** 2 ? candidate : nearest;
+                    }, rooms[0]);
+                    openRoomDialog(
+                        selectedRoom.number,
+                        workStudyRoomNumbers.has(selectedRoom.number)
+                            ? "Algemene werk- en studieomgeving"
+                            : "",
+                        floor,
+                        selectedRoom.number
+                    );
+                });
+                roomTargets.append(button);
+            });
+        }
+
+        function addStudySpaceTargets(spots, floor) {
+            roomTargets.replaceChildren();
+            spots.forEach((spot, index) => {
+                const button = document.createElement("button");
+                const reservationKey = `${floor.level}:study-space-${index + 1}`;
+                button.className = "room-target study-space-target";
+                button.type = "button";
+                button.title = "Algemene studieruimte";
+                button.dataset.reservationKey = reservationKey;
+                button.setAttribute(
+                    "aria-label",
+                    `Details van algemene studieruimte, punt ${index + 1}`
+                );
+                button.style.left = `${spot.x}%`;
+                button.style.top = `${spot.y}%`;
+                updateRoomTargetReservation(button, reservationKey);
+                button.addEventListener("click", () => {
+                    openRoomDialog("", "Algemene studieruimte", floor, `study-space-${index + 1}`);
+                });
+                roomTargets.append(button);
+            });
+        }
+
+        function openRoomDialog(roomNumber, category, floor, targetId) {
+            const key = `${floor.level}:${targetId}`;
+            const draft = roomDrafts.get(key) || { title: "Studieruimte", description: "" };
+            document.getElementById("dialog-title").textContent = "Studieruimte";
+            document.getElementById("dialog-room-number").textContent = roomNumber;
+            document.getElementById("dialog-room-row").hidden = !roomNumber;
+            document.getElementById("dialog-floor").textContent = floor.label;
+            document.getElementById("dialog-category").textContent = category;
+            document.getElementById("dialog-category-row").hidden = !category;
+            dialogRoomTitle.value = draft.title;
+            dialogRoomDescription.value = draft.description;
+            actionStatus.textContent = "";
+            roomDialog.dataset.reservationKey = key;
+            updateReservationStatus(key);
+            roomDialog.showModal();
+        }
+
+        function updateRoomDraft() {
+            const key = roomDialog.dataset.reservationKey;
+            if (key) {
+                roomDrafts.set(key, {
+                    title: dialogRoomTitle.value,
+                    description: dialogRoomDescription.value
+                });
+            }
+        }
+
+        function updateRoomTargetReservation(button, key) {
+            const isReserved = reservations.has(key);
+            button.classList.toggle("is-reserved", isReserved);
+            const description = button.classList.contains("study-space-target")
+                ? `Details van algemene studieruimte, punt ${key.split("study-space-")[1]}`
+                : `Details van kamer ${key.slice(key.indexOf(":") + 1)}`;
+            button.setAttribute(
+                "aria-label",
+                `${description}${isReserved ? ", gereserveerd" : ""}`
+            );
+        }
+
+        function updateReservationStatus(key) {
+            roomTargets.querySelectorAll(".room-target").forEach((button) => {
+                if (button.dataset.reservationKey === key) {
+                    updateRoomTargetReservation(button, key);
+                }
+            });
+            if (!reservationStorageAvailable) {
+                reservationStatus.textContent = "Reserveringen konden niet worden geladen of opgeslagen in deze browser.";
+                return;
+            }
+            const isReserved = reservations.has(key);
+            document.getElementById("reserve-room").textContent = isReserved
+                ? "Annuleer reservering"
+                : "Reserveer ruimte";
+            reservationStatus.textContent = isReserved
+                ? "Deze ruimte is gereserveerd in deze browser."
+                : "Deze ruimte is niet gereserveerd.";
+        }
+
+        function saveReservations() {
+            try {
+                localStorage.setItem(reservationStorageKey, JSON.stringify([...reservations]));
+                return true;
+            } catch (error) {
+                console.error("Reservering kon niet worden opgeslagen.", error);
+                reservationStorageAvailable = false;
+                reservationStatus.textContent = "De reservering kon niet in deze browser worden opgeslagen.";
+                return false;
+            }
+        }
+
+        function showRoomFilter(floor) {
+            const workStudyRooms = floor.rooms.filter((room) => workStudyRoomNumbers.has(room.number));
+            const filterIsAvailable = workStudyRooms.length > 0;
+
+            if (!filterIsAvailable) {
+                currentRoomFilter = "all";
+            }
+
+            roomFilterButtons.forEach((button) => {
+                const selected = button.dataset.roomFilter === currentRoomFilter;
+                button.classList.toggle("is-selected", selected);
+                button.setAttribute("aria-pressed", String(selected));
+                button.disabled = button.dataset.roomFilter === "work-study" && !filterIsAvailable;
+            });
+
+            document.getElementById("all-room-count").textContent = String(floor.rooms.length);
+            document.getElementById("work-study-count").textContent = String(workStudyRooms.length);
+            document.getElementById("slide-badge").textContent = currentRoomFilter === "work-study"
+                ? `${workStudyRooms.length} werk- en studieruimtes`
+                : `${floor.rooms.length} kamers`;
+
+            const visibleRooms = currentRoomFilter === "work-study" ? workStudyRooms : floor.rooms;
+            addRoomTargets(floor, visibleRooms);
+        }
+
+        function showSlide(index) {
+            currentSlide = Math.max(0, Math.min(index, slides.length - 1));
+            const slide = slides[currentSlide];
+            const choices = document.querySelectorAll(".floor-choice");
+            const floor = slide.floor;
+
+            choices.forEach((choice) => {
+                const selected = Number(choice.dataset.slide) === currentSlide;
+                choice.classList.toggle("is-selected", selected);
+                if (selected) {
+                    choice.setAttribute("aria-current", "true");
+                } else {
+                    choice.removeAttribute("aria-current");
+                }
+            });
+
+            slidePanel.hidden = false;
+            slidePanel.classList.add("is-fullscreen");
+            document.body.classList.add("is-floor-open");
+            roomTargets.replaceChildren();
+            roomTargets.hidden = false;
+            const hasStudySpots = Boolean(floor.studySpots);
+            filterBar.hidden = hasStudySpots;
+            currentRoomFilter = "all";
+            mapImage.src = floor.image;
+            mapImage.alt = `Plattegrond van de ${floor.label} van Heidelberglaan 15`;
+            document.getElementById("slide-title").textContent = floor.label;
+            if (hasStudySpots) {
+                document.getElementById("slide-description").textContent =
+                    "Selecteer een rode knop voor de gegevens van een algemene studieruimte";
+                document.getElementById("slide-badge").textContent =
+                    `${floor.studySpots.length} algemene studieruimtes`;
+                addStudySpaceTargets(floor.studySpots, floor);
+            } else {
+                document.getElementById("slide-description").textContent =
+                    "Selecteer een kamernummer voor de ruimtegegevens";
+                showRoomFilter(floor);
+            }
+
+            fitFullscreenMap();
+            previousButton.disabled = currentSlide === 0;
+            nextButton.disabled = currentSlide === slides.length - 1;
+        }
+
+        function fitFullscreenMap() {
+            if (slidePanel.hidden || !mapImage.naturalWidth || !mapImage.naturalHeight) {
+                return;
+            }
+            const headerHeight = slidePanel.querySelector(".slide-heading").offsetHeight;
+            const filterHeight = filterBar.hidden ? 0 : filterBar.offsetHeight;
+            const controlsHeight = slidePanel.querySelector(".slide-controls").offsetHeight;
+            const availableHeight = Math.max(
+                100,
+                window.innerHeight - headerHeight - filterHeight - controlsHeight
+            );
+            const aspectRatio = mapImage.naturalWidth / mapImage.naturalHeight;
+            const width = Math.min(window.innerWidth, availableHeight * aspectRatio);
+            mapStage.style.width = `${width}px`;
+            mapStage.style.height = `${width / aspectRatio}px`;
+        }
+
+        function closeFloorView() {
+            document.body.classList.remove("is-floor-open");
+            slidePanel.classList.remove("is-fullscreen");
+            slidePanel.hidden = true;
+            mapStage.style.removeProperty("width");
+            mapStage.style.removeProperty("height");
+        }
+
+        floorList.addEventListener("click", (event) => {
+            const button = event.target.closest("button[data-slide]");
+            if (button) {
+                showSlide(Number(button.dataset.slide));
+            }
+        });
+
+        roomFilterButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                currentRoomFilter = button.dataset.roomFilter;
+                showRoomFilter(slides[currentSlide].floor);
+            });
+        });
+
+        previousButton.addEventListener("click", () => showSlide(currentSlide - 1));
+        nextButton.addEventListener("click", () => showSlide(currentSlide + 1));
+        closeFloorViewButton.addEventListener("click", closeFloorView);
+        mapImage.addEventListener("load", fitFullscreenMap);
+        window.addEventListener("resize", fitFullscreenMap);
+        document.getElementById("close-dialog").addEventListener("click", () => roomDialog.close());
+        document.getElementById("reserve-room").addEventListener("click", () => {
+            const key = roomDialog.dataset.reservationKey;
+            const wasReserved = reservations.has(key);
+            if (reservations.has(key)) {
+                reservations.delete(key);
+            } else {
+                reservations.add(key);
+            }
+            if (saveReservations()) {
+                updateReservationStatus(key);
+            } else if (wasReserved) {
+                reservations.add(key);
+            } else {
+                reservations.delete(key);
+            }
+        });
+        dialogRoomTitle.addEventListener("input", updateRoomDraft);
+        dialogRoomDescription.addEventListener("input", updateRoomDraft);
+        document.getElementById("open-room").addEventListener("click", () => {
+            dialogRoomTitle.value = "";
+            dialogRoomDescription.value = "";
+            updateRoomDraft();
+            actionStatus.textContent = "De ruimte is geopend; titel en beschrijving zijn leeggemaakt.";
+        });
+        roomDialog.addEventListener("click", (event) => {
+            if (event.target === roomDialog) {
+                roomDialog.close();
+            }
+        });
+        document.addEventListener("keydown", (event) => {
+            if (roomDialog.open) {
+                if (event.key === "Escape") {
+                    roomDialog.close();
+                }
+                return;
+            }
+            if (event.key === "Escape" && document.body.classList.contains("is-floor-open")) {
+                closeFloorView();
+                return;
+            }
+            if (event.target instanceof HTMLElement && event.target.matches("button")) {
+                return;
+            }
+            if (!document.body.classList.contains("is-floor-open")) {
+                return;
+            }
+            if (event.key === "ArrowRight") {
+                showSlide(currentSlide + 1);
+            } else if (event.key === "ArrowLeft") {
+                showSlide(currentSlide - 1);
+            }
+        });
+    </script>
+</body>
+</html>
