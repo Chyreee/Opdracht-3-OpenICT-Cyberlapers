@@ -512,6 +512,39 @@ def get_questions():
     finally:
         conn.close()
 
+@app.get("/api/users/{user_id}/questions")
+def get_user_questions(user_id: int):
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT id, title, question_text, created_at
+                FROM questions
+                WHERE author_id = %s
+                ORDER BY created_at DESC
+                """,
+                (user_id,)
+            )
+
+            rows = cur.fetchall()
+
+        questions = []
+
+        for row in rows:
+            questions.append({
+                "id": row[0],
+                "title": row[1],
+                "question_text": row[2],
+                "created_at": row[3].isoformat()
+            })
+
+        return questions
+
+    finally:
+        conn.close()
+
 @app.get("/api/questions/search")
 def search_questions(query: str):
     conn = get_db_connection()

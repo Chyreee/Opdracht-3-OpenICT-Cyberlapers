@@ -132,6 +132,26 @@
     background: #e5e7eb;
 }
 
+.profile-question {
+    padding: 15px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-question h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.profile-question p {
+    font-size: 14px;
+    font-weight: normal;
+    text-align: left;
+}
+
+.profile-question small {
+    color: #777;
+}
+
     </style>
 </head>
 <body>
@@ -175,8 +195,11 @@
     </main>
     
             <div class="question-container">
-             <p>Mijn vragen: <strong id="profileQuestions"></strong></p>
-        </div>
+    <p>My Questions</p>
+    <div id="profileQuestions">
+        Loading questions...
+    </div>
+</div>
         </div>
 <script src="profile.js"></script>
 </body>
