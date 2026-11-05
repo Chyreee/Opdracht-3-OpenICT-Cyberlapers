@@ -1,4 +1,6 @@
 
+from typing import Literal, Optional
+
 import psycopg
 from pwdlib import PasswordHash
 from fastapi import FastAPI, HTTPException
@@ -18,9 +20,10 @@ class QuestionData(BaseModel):
     study_year: int = Field(ge=1, le=4)
     beroepsrol: str
 
-class CommentData(BaseModel):
-    comment_text: str = Field(min_length=1)
-    author_id: int = Field(gt=0)
+
+class VoteData(BaseModel):
+    user_id: int = Field(gt=0)
+    vote_type: Optional[Literal["up", "down"]]
 
 
 class RoomReservationData(BaseModel):
@@ -231,116 +234,6 @@ def get_room_reservations(user_id: int | None = None):
         conn.close()
 
 
-@app.get("/api/questions/{question_id}/comments")
-def get_question_comments(question_id: int):
-    conn = get_db_connection()
-
-    try:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT
-                    comments.id,
-                    comments.comment_text,
-                    comments.author_id,
-                    users.username,
-                    comments.created_at
-                FROM comments
-                JOIN users ON comments.author_id = users.id
-                WHERE comments.question_id = %s
-                ORDER BY comments.created_at ASC
-                """,
-                (question_id,)
-            )
-
-            rows = cur.fetchall()
-
-        return [
-            {
-                "id": row[0],
-                "comment_text": row[1],
-                "author_id": row[2],
-                "username": row[3],
-                "created_at": row[4].isoformat()
-            }
-            for row in rows
-        ]
-
-    finally:
-        conn.close()
-
-
-@app.post("/api/questions/{question_id}/comments", status_code=201)
-def create_question_comment(question_id: int, data: CommentData):
-    conn = get_db_connection()
-
-    try:
-        with conn.cursor() as cur:
-
-            # Check whether the question exists.
-            cur.execute(
-                "SELECT id FROM questions WHERE id = %s",
-                (question_id,)
-            )
-
-            if cur.fetchone() is None:
-                raise HTTPException(status_code=404, detail="Question not found")
-
-            # Check whether the author exists.
-            cur.execute(
-                "SELECT id FROM users WHERE id = %s",
-                (data.author_id,)
-            )
-
-            if cur.fetchone() is None:
-                raise HTTPException(status_code=404, detail="User not found")
-
-            # Save the comment.
-            cur.execute(
-                """
-                INSERT INTO comments (question_id, author_id, comment_text)
-                VALUES (%s, %s, %s)
-                RETURNING id
-                """,
-                (question_id, data.author_id, data.comment_text.strip())
-            )
-
-            comment_id = cur.fetchone()[0]
-
-            # Retrieve the saved comment with the author's username.
-            cur.execute(
-                """
-                SELECT comments.id,
-                       comments.comment_text,
-                       comments.author_id,
-                       users.username,
-                       comments.created_at
-                FROM comments
-                JOIN users ON comments.author_id = users.id
-                WHERE comments.id = %s
-                """,
-                (comment_id,)
-            )
-
-            row = cur.fetchone()
-
-        conn.commit()
-
-        return {
-            "id": row[0],
-            "comment_text": row[1],
-            "author_id": row[2],
-            "username": row[3],
-            "created_at": row[4].isoformat()
-        }
-
-    except HTTPException:
-        conn.rollback()
-        raise
-
-    finally:
-        conn.close()
-
 @app.post("/api/room-reservations", status_code=201)
 def create_room_reservation(data: RoomReservationData):
     conn = get_db_connection()
@@ -479,18 +372,25 @@ def delete_room_reservation(data: RoomReservationReleaseData):
 
 
 @app.get("/api/questions")
-def get_questions():
+def get_questions(user_id: Optional[int] = None):
     conn = get_db_connection()
 
     try:
         with conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT id, title, question_text, code, author_id,
-                       study_year, beroepsrol, created_at
-                FROM questions
-                ORDER BY created_at DESC
-                """
+                SELECT q.id, q.title, q.question_text, q.code, q.author_id,
+                       q.study_year, q.beroepsrol, q.created_at,
+                       (SELECT COUNT(*) FROM votes v
+                        WHERE v.question_id = q.id AND v.vote_type = 'up'),
+                       (SELECT COUNT(*) FROM votes v
+                        WHERE v.question_id = q.id AND v.vote_type = 'down'),
+                       (SELECT v.vote_type FROM votes v
+                        WHERE v.question_id = q.id AND v.user_vote = %s)
+                FROM questions q
+                ORDER BY q.created_at DESC
+                """,
+                (user_id,)
             )
             rows = cur.fetchall()
 
@@ -505,45 +405,78 @@ def get_questions():
                 "author_id": row[4],
                 "study_year": row[5],
                 "beroepsrol": row[6],
-                "created_at": row[7]
+                "created_at": row[7],
+                "upvotes": row[8],
+                "downvotes": row[9],
+                "user_vote": row[10]
             })
 
         return questions
     finally:
         conn.close()
 
-@app.get("/api/users/{user_id}/questions")
-def get_user_questions(user_id: int):
+
+@app.post("/api/questions/{question_id}/vote")
+def vote_on_question(question_id: int, data: VoteData):
     conn = get_db_connection()
 
     try:
         with conn.cursor() as cur:
+            cur.execute("SELECT id FROM users WHERE id = %s", (data.user_id,))
+            if cur.fetchone() is None:
+                raise HTTPException(status_code=404, detail="User not found")
+
+            cur.execute("SELECT id FROM questions WHERE id = %s", (question_id,))
+            if cur.fetchone() is None:
+                raise HTTPException(status_code=404, detail="Question not found")
+
+            if data.vote_type is None:
+                cur.execute(
+                    "DELETE FROM votes WHERE user_vote = %s AND question_id = %s",
+                    (data.user_id, question_id)
+                )
+            else:
+                cur.execute(
+                    """
+                    INSERT INTO votes (user_vote, question_id, vote_type)
+                    VALUES (%s, %s, %s)
+                    ON CONFLICT (user_vote, question_id)
+                    DO UPDATE SET vote_type = EXCLUDED.vote_type
+                    """,
+                    (data.user_id, question_id, data.vote_type)
+                )
+
             cur.execute(
                 """
-                SELECT id, title, question_text, created_at
-                FROM questions
-                WHERE author_id = %s
-                ORDER BY created_at DESC
+                SELECT
+                    (SELECT COUNT(*) FROM votes
+                     WHERE question_id = %s AND vote_type = 'up'),
+                    (SELECT COUNT(*) FROM votes
+                     WHERE question_id = %s AND vote_type = 'down')
                 """,
-                (user_id,)
+                (question_id, question_id)
             )
+            upvotes, downvotes = cur.fetchone()
 
-            rows = cur.fetchall()
-
-        questions = []
-
-        for row in rows:
-            questions.append({
-                "id": row[0],
-                "title": row[1],
-                "question_text": row[2],
-                "created_at": row[3].isoformat()
-            })
-
-        return questions
-
+        conn.commit()
+        return {
+            "upvotes": upvotes,
+            "downvotes": downvotes,
+            "user_vote": data.vote_type
+        }
+    except HTTPException:
+        conn.rollback()
+        raise
+    except Exception as error:
+        conn.rollback()
+        print("Error saving question vote:", repr(error))
+        raise HTTPException(
+            status_code=500,
+            detail="Could not save vote."
+        )
     finally:
         conn.close()
+
 
 @app.get("/api/questions/search")
 def search_questions(query: str):

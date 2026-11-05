@@ -217,7 +217,7 @@ body {
     background: #633b8e;
 }
 
-.user .profile-icon {
+.user img {
     display: block;
     width: 24px;
     height: 24px;
@@ -225,7 +225,7 @@ body {
     pointer-events: none;
 }
 
-.notification svg {
+.notification img {
     display: block;
     width: 24px;
     height: 24px;
@@ -511,6 +511,71 @@ body {
     display: block;
     width: auto;
     height: auto;
+}
+
+.question-votes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vote-button {
+    min-width: 58px;
+    min-height: 32px;
+    padding: 4px 8px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    color: #555b60;
+    background: #dce0e5;
+    border: 1px solid #9da8b3;
+    border-radius: 6px;
+    cursor: pointer;
+
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.vote-button img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.vote-button:hover:not(:disabled) {
+    background: #c8cdd4;
+}
+
+.vote-button[aria-pressed="true"] {
+    color: #fff;
+    background: #784BA5;
+    border-color: #784BA5;
+}
+
+.vote-button[aria-pressed="true"]:hover:not(:disabled) {
+    background: #633b8e;
+}
+
+.vote-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.vote-button:focus-visible {
+    outline: 2px solid #1CCBAD;
+    outline-offset: 2px;
+}
+
+.vote-count {
+    font-size: 13px;
+    line-height: 1;
+}
+
+.vote-message {
+    color: #555b60;
+    font-size: 12px;
 }
 
 .empty-card {

@@ -82,125 +82,20 @@ function playNotificationSound(sound) {
 const commentList = document.getElementById("commentList");
 const commentForm = document.getElementById("commentForm");
 const commentInput = document.getElementById("commentInput");
-let activeQuestionId = null;
 
-function displayComment(comment) {
-    const item = document.createElement("li");
-
-    const author = document.createElement("strong");
-    author.textContent = comment.username;
-
-    const text = document.createElement("span");
-    text.textContent = `: ${comment.comment_text}`;
-
-    item.appendChild(author);
-    item.appendChild(text);
-
-    commentList.appendChild(item);
-}
-
-
-async function loadQuestionComments(questionId) {
-    commentList.innerHTML = "";
-
-    const loadingMessage = document.createElement("li");
-    loadingMessage.textContent = "Loading comments...";
-    commentList.appendChild(loadingMessage);
-
-    try {
-        const response = await fetch(
-            `/api/questions/${questionId}/comments`
-        );
-
-        if (!response.ok) {
-            throw new Error("Could not load comments.");
-        }
-
-        const comments = await response.json();
-
-        // Make sure we're still viewing the same question.
-        if (activeQuestionId !== questionId) return;
-
-        commentList.innerHTML = "";
-
-        if (comments.length === 0) {
-            const emptyMessage = document.createElement("li");
-            emptyMessage.textContent = "No comments yet.";
-            commentList.appendChild(emptyMessage);
-            return;
-        }
-
-        comments.forEach(displayComment);
-
-    } catch (error) {
-        console.error("Error loading comments:", error);
-
-        if (activeQuestionId === questionId) {
-            commentList.innerHTML = "";
-
-            const errorMessage = document.createElement("li");
-            errorMessage.textContent = "Could not load comments.";
-            commentList.appendChild(errorMessage);
-        }
-    }
-}
-
-commentForm.addEventListener("submit", async event => {
+commentForm.addEventListener("submit", event => {
     event.preventDefault();
 
     const text = commentInput.value.trim();
-
     if (text === "") return;
 
-    const userId = localStorage.getItem("userId");
-
-    if (!userId) {
-        alert("Please log in before commenting.");
-        return;
-    }
-
-    if (!activeQuestionId) {
-        alert("No question selected.");
-        return;
-    }
-
-    const questionId = activeQuestionId;
     const answerSound = prepareNotificationSound("Answer");
+    const item = document.createElement("li");
+    item.textContent = text;
+    commentList.appendChild(item);
 
-    try {
-        const response = await fetch(
-            `/api/questions/${questionId}/comments`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    comment_text: text,
-                    author_id: Number(userId)
-                })
-            }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.detail || "Could not submit comment.");
-        }
-
-        commentInput.value = "";
-
-        // Reload comments from the database.
-        if (activeQuestionId === questionId) {
-            await loadQuestionComments(questionId);
-        }
-
-        void answerSound.then(playNotificationSound);
-
-    } catch (error) {
-        console.error("Error submitting comment:", error);
-        alert(error.message || "Could not submit comment.");
-    }
+    commentInput.value = "";
+    void answerSound.then(playNotificationSound);
 });
 const questionDialog = document.getElementById("questionDialog");
 const dialogTitle = document.getElementById("dialogTitle");
@@ -210,19 +105,14 @@ const dialogCode = document.getElementById("dialogCode");
 const closeDialogButton = document.getElementById("closeDialogButton");
 
 function openQuestion(question) {
-    activeQuestionId = question.id;
-
     commentList.innerHTML = "";
     commentInput.value = "";
-
     dialogTitle.textContent = question.title;
     dialogMeta.textContent = `${question.beroepsrol} - Year ${question.study_year}`;
     dialogText.textContent = question.question_text;
     dialogCode.textContent = question.code;
 
     questionDialog.showModal();
-
-    loadQuestionComments(question.id);
 }
 
 closeDialogButton.addEventListener("click", () => {
@@ -260,14 +150,138 @@ function displayQuestions(questions, questionsSection) {
         meta.appendChild(role);
         meta.appendChild(year);
 
+        const voteControls = document.createElement("div");
+        voteControls.classList.add("question-votes");
+        voteControls.setAttribute("aria-label", "Vote on this question");
+
+        const voteMessage = document.createElement("span");
+        voteMessage.classList.add("vote-message");
+        voteMessage.setAttribute("role", "status");
+
+        const upvoteButton = createVoteButton(
+            "up",
+            question.upvotes ?? 0,
+            question.user_vote === "up",
+            question.id
+        );
+        const downvoteButton = createVoteButton(
+            "down",
+            question.downvotes ?? 0,
+            question.user_vote === "down",
+            question.id
+        );
+
+        voteControls.append(upvoteButton, downvoteButton, voteMessage);
+
         card.appendChild(heading);
         card.appendChild(description);
         card.appendChild(meta);
+        card.appendChild(voteControls);
 
-                card.addEventListener("click", () => openQuestion(question));
+        card.addEventListener("click", () => openQuestion(question));
 
         questionsSection.appendChild(card);
     });
+}
+
+function createVoteButton(type, count, isSelected, questionId) {
+    const button = document.createElement("button");
+    const image = document.createElement("img");
+    const countLabel = document.createElement("span");
+    const isUpvote = type === "up";
+    const label = isUpvote ? "Upvote" : "Downvote";
+
+    button.type = "button";
+    button.classList.add("vote-button", `${type}vote-button`);
+    button.setAttribute("aria-label", `${label} (${count})`);
+    button.setAttribute("aria-pressed", String(isSelected));
+    button.dataset.vote = type;
+    button.dataset.questionId = String(questionId);
+    button.disabled = !localStorage.getItem("userId");
+
+    image.src = isUpvote
+        ? (isSelected ? "uparrowf.png" : "uparrow.png")
+        : (isSelected ? "downarrowf.png" : "downarrow.png");
+    image.alt = "";
+    image.setAttribute("aria-hidden", "true");
+    countLabel.classList.add("vote-count");
+    countLabel.textContent = String(count);
+
+    button.append(image, countLabel);
+    button.addEventListener("click", handleVoteClick);
+    return button;
+}
+
+async function handleVoteClick(event) {
+    event.stopPropagation();
+
+    const button = event.currentTarget;
+    const controls = button.closest(".question-votes");
+    const message = controls.querySelector(".vote-message");
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+        message.textContent = "Please log in to vote.";
+        return;
+    }
+
+    const currentVote = controls.querySelector('[aria-pressed="true"]')?.dataset.vote;
+    const requestedVote = button.dataset.vote;
+    const voteType = currentVote === requestedVote ? null : requestedVote;
+
+    message.textContent = "";
+    controls.querySelectorAll(".vote-button").forEach(voteButton => {
+        voteButton.disabled = true;
+    });
+
+    try {
+        const response = await fetch(
+            `/api/questions/${button.dataset.questionId}/vote`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_id: Number(userId), vote_type: voteType })
+            }
+        );
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.detail || "Could not save your vote.");
+        }
+
+        const question = allQuestions.find(
+            item => String(item.id) === button.dataset.questionId
+        );
+        if (question) {
+            question.upvotes = result.upvotes;
+            question.downvotes = result.downvotes;
+            question.user_vote = result.user_vote;
+        }
+
+        controls.querySelectorAll(".vote-button").forEach(voteButton => {
+            const isUpvote = voteButton.dataset.vote === "up";
+            const selected = result.user_vote === voteButton.dataset.vote;
+            const count = isUpvote ? result.upvotes : result.downvotes;
+            const image = voteButton.querySelector("img");
+
+            voteButton.setAttribute("aria-pressed", String(selected));
+            voteButton.setAttribute(
+                "aria-label",
+                `${isUpvote ? "Upvote" : "Downvote"} (${count})`
+            );
+            image.src = isUpvote
+                ? (selected ? "uparrowf.png" : "uparrow.png")
+                : (selected ? "downarrowf.png" : "downarrow.png");
+            voteButton.querySelector(".vote-count").textContent = String(count);
+        });
+    } catch (error) {
+        console.error("Error saving question vote:", error);
+        message.textContent = error.message || "Could not save your vote.";
+    } finally {
+        controls.querySelectorAll(".vote-button").forEach(voteButton => {
+            voteButton.disabled = false;
+        });
+    }
 }
 
 
@@ -298,7 +312,9 @@ searchInput.addEventListener("input", filterQuestions);
 
 async function loadQuestions() {
     try {
-        const response = await fetch("/api/questions");
+        const userId = localStorage.getItem("userId");
+        const userQuery = userId ? `?user_id=${encodeURIComponent(userId)}` : "";
+        const response = await fetch(`/api/questions${userQuery}`);
 
         if (!response.ok) {
             throw new Error("Could not load questions.");
