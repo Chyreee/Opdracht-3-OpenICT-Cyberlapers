@@ -5,26 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - Code Sharing</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css">
     <style>
         .profile-container {
+            display: flex;
+            flex-direction: column;
             max-width: 600px;
-            margin: 60px auto;
+            min-width: 400px;
+            margin: 0;
             padding: 30px;
             background: white;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
-        .profile-avatar {
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            background: #e5e7eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-        }
+  
         .profile-container h1,
         .profile-container p {
             text-align: center;
@@ -50,34 +44,140 @@
             background: #dc2626;
             color: white;
         }
+        .profile-avatar {
+        position: relative;
+       }
+    
+       .question-container {
+        display: flex;
+        flex-direction: column;
+        max-width: 600px;
+        min-width: 400px;
+        min-height: 200px;
+        margin: 0;
+        padding: 30px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+       }
+       
+       .container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 20px;
+        margin-top: 100px;
+       }
+
+       .question-container p {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+       }
+
+
+
+
+
+
+       .avatar-wrapper {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 20px;
+}
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 36px;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.profile-avatar img.has-picture {
+    display: block;
+}
+
+.edit-pfp {
+    position: absolute;
+    right: -5px;
+    bottom: 0;
+    width: 30px;
+    height: 30px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #374151;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.edit-pfp:hover {
+    background: #e5e7eb;
+}
+
     </style>
 </head>
 <body>
-    <header class="topbar">
-        <div class="brand"></div>
-        <div class="search"></div>
-        <button class="user" type="button"
-                aria-label="My profile"
-                title="My profile"
-                onclick="window.location.href='profile.html'"></button>
-    </header>
 
+
+    <div class="container">
     <main class="profile-container">
-        <div class="profile-avatar" aria-hidden="true">&#128100;</div>
+   <div class="avatar-wrapper">
+    <div class="profile-avatar">
+        <img id="profilePicture" src="" alt="Profile picture">
+        <i class="bi bi-person-fill" id="defaultAvatar"></i>
+    </div>
+
+    <label for="pfpInput" class="edit-pfp" title="Change profile picture">
+        <i class="bi bi-pencil-square"></i>
+    </label>
+
+    <input
+        type="file"
+        id="pfpInput"
+        accept="image/*"
+        hidden
+    >
+</div>
         <h1>My Profile</h1>
+        <p>Id: <strong id="profileUserId">Loading...</strong></p>
         <p>Username: <strong id="profileUsername">Loading...</strong></p>
-        <p>User ID: <span id="profileUserId">Loading...</span></p>
+        <p>Semester: <strong id="profileSemester">Loading...</strong></p>
+        <p>Beroepsrol: <strong id="profileBeroepsrol">Loading...</strong></p>
 
         <div class="profile-actions">
-            <button class="back-button" id="backButton" type="button">
-                Back to home
-            </button>
+<button class="back-button" id="backButton" type="button"
+        onclick="window.location.href='homescreen.html'">
+    Back to home
+</button>
             <button class="logout-button" id="logoutButton" type="button">
                 Log out
             </button>
         </div>
+        
     </main>
-
-    <script src="profile.js"></script>
+    
+            <div class="question-container">
+             <p>Mijn vragen: <strong id="profileQuestions"></strong></p>
+        </div>
+        </div>
+<script src="profile.js"></script>
 </body>
 </html>

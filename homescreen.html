@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HumanGI - Code Sharing App</title>
+
+    <link rel="stylesheet" href="homescreen.css">
+</head>
+
+<body>
+
+    <div class="browser">
+
+        <!-- TOP NAVIGATION -->
+        <header class="topbar">
+
+            <div class="brand">
+                <button
+                    type="button"
+                    onclick="window.location.href='homescreen.html'">
+                    HumanGI
+                </button>
+            </div>
+
+            <input
+                type="text"
+                class="search"
+                id="searchInput"
+                placeholder="Zoek hier een vraag..."
+                aria-label="Zoek een vraag"
+            >
+
+            <details class="notification-container">
+                <summary
+                    class="notification"
+                    aria-label="Open notificaties"
+                    title="Open notificaties">
+                    <img class="notification-default" src="Notification.png" alt="" aria-hidden="true">
+                    <img class="notification-hover" src="Notfication%20ding.png" alt="" aria-hidden="true">
+                </summary>
+                <div class="notification-dropdown">
+                    <p>Je hebt geen notificaties.</p>
+                </div>
+            </details>
+            <button 
+                class="user"
+                type="button"
+                aria-label="Open profiel"
+                title="Open profiel"
+                onclick="window.location.href='profile.html'">
+                <img src="Profile%20icon.png" alt="" aria-hidden="true">
+            </button>
+
+        </header>
+
+
+        <!-- MAIN PAGE LAYOUT -->
+        <main class="layout">
+
+
+            <!-- LEFT SIDEBAR: LEADERBOARD -->
+            <aside class="leaderboard">
+
+                <div class="leaderboard-title">
+                 <h2>Weekly Leaderboard</h2>
+                </div>
+
+                <div class="leader-list">
+
+                    <div class="leader current"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+                    <div class="leader"></div>
+
+                </div>
+
+            </aside>
+
+
+            <!-- CENTER: QUESTIONS -->
+            <section class="questions">
+
+                <!-- ASK QUESTION BUTTON -->
+                <div class="ask-question">
+
+                    <button
+                        type="button"
+                        id="askQuestionButton">
+                        Ask a question
+                    </button>
+
+                </div>
+
+
+                <!-- QUESTION FORM -->
+                <form id="questionForm" hidden>
+
+                    <label for="title">
+                        Title
+                    </label>
+
+                    <input
+                        type="text"
+                        id="title"
+                        maxlength="50"
+                        required
+                    >
+
+
+                    <label for="questionText">
+                        Your question
+                    </label>
+
+                    <textarea
+                        id="questionText"
+                        required
+                    ></textarea>
+
+
+                    <label for="code">
+                        Code snippet
+                    </label>
+
+                    <textarea
+                        id="code"
+                        required
+                    ></textarea>
+
+
+                    <label for="studyYear">
+                        Study year
+                    </label>
+
+                    <select id="studyYear" required>
+
+                        <option value="">
+                            Select a year
+                        </option>
+
+                        <option value="1">Year 1</option>
+                        <option value="2">Year 2</option>
+                        <option value="3">Year 3</option>
+                        <option value="4">Year 4</option>
+
+                    </select>
+
+
+                    <label for="beroepsrol">
+                        Beroepsrol
+                    </label>
+
+                    <input
+                        type="text"
+                        id="beroepsrol"
+                        placeholder="Bijv. Software developer"
+                        required
+                    >
+
+
+                    <!-- FORM BUTTONS -->
+                    <button type="submit">
+                        Submit question
+                    </button>
+
+                    <button
+                        type="button"
+                        id="cancelQuestionButton">
+                        Cancel
+                    </button>
+
+
+                    <p id="formMessage"></p>
+
+                </form>
+
+            </section>
+
+
+            <!-- RIGHT SIDEBAR -->
+            <aside class="right-sidebar" aria-label="Plattegrond Heidelberglaan 15">
+                <iframe
+                    class="floor-map-frame"
+                    id="floorMapFrame"
+                    src="plattegrond.html?embed=1"
+                    title="Verdiepingen en plattegrond van Heidelberglaan 15"
+                    allow="fullscreen"
+                ></iframe>
+            </aside>
+
+
+        </main>
+
+    </div>
+    <dialog id="questionDialog">
+    <button type="button" id="closeDialogButton" aria-label="Close">X</button>
+
+    <h2 id="dialogTitle"></h2>
+    <p id="dialogMeta"></p>
+    <p id="dialogText"></p>
+    <pre id="dialogCode"></pre>
+
+    <div id="commentsArea">
+    <h3>Comments</h3>
+    <ul id="commentList"></ul>
+
+    <form id="commentForm">
+        <input type="text" id="commentInput" placeholder="Add a comment" required>
+        <button type="submit">Post</button>
+    </form>
+</div>
+</dialog>
+    <script src="homescreen.js"></script>
+</body>
+</html>
